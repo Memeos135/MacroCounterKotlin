@@ -14,6 +14,7 @@
     <string name="menu_share">شارك</string>
     <string name="menu_send">إرسال</string>
     <string name="login">تسجيل الدخول</string>
+    <string name="implement_interface">Interface must be implemented</string>
 
     <string name="P">ب</string>
     <string name="C">ك</string>
