@@ -1,0 +1,21 @@
+<resources>
+    <string name="app_name">MacroCounterRemaster</string>
+    <string name="navigation_drawer_open">فتح نافذة التنقل</string>
+    <string name="navigation_drawer_close">إغلاق نافذة التنقل</string>
+    <string name="nav_header_title">Android Studio</string>
+    <string name="nav_header_subtitle">android.studio@android.com</string>
+    <string name="nav_header_desc">رأس التنقل</string>
+    <string name="action_settings">الإعدادات</string>
+
+    <string name="menu_home">الصفحة الرئيسية</string>
+    <string name="menu_gallery">صالة عرض</string>
+    <string name="menu_slideshow">عرض الشرائح</string>
+    <string name="menu_tools">أدوات</string>
+    <string name="menu_share">شارك</string>
+    <string name="menu_send">إرسال</string>
+
+    <string name="P">ب</string>
+    <string name="C">ك</string>
+    <string name="F">د</string>
+    <string name="cal">كالوري</string>
+</resources>
