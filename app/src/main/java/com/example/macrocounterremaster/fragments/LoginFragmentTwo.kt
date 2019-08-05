@@ -12,7 +12,7 @@ import com.example.macrocounterremaster.utils.Constants
 import kotlinx.android.synthetic.main.fragment_stage_two.view.*
 
 class LoginFragmentTwo(layout_id: Int): Fragment() {
-    var layout : Int = layout_id
+    val layout : Int = layout_id
     private lateinit var listener: PreviousStage
 
     interface PreviousStage{
