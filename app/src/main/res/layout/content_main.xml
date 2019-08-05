@@ -7,7 +7,7 @@
         android:layout_height="match_parent"
         app:layout_behavior="@string/appbar_scrolling_view_behavior"
         tools:showIn="@layout/app_bar_main"
-        tools:context=".MainActivity">
+        tools:context=".MainActivity" android:background="@color/darkGray">
 
     <LinearLayout
             android:layout_width="match_parent"
@@ -18,84 +18,89 @@
                 android:layout_height="match_parent" android:id="@+id/calendarView"
                 app:layout_constraintStart_toStartOf="parent"
                 app:layout_constraintEnd_toEndOf="parent"
-                app:layout_constraintTop_toTopOf="parent"/>
+                app:layout_constraintTop_toTopOf="parent"
+                android:dateTextAppearance="@style/calendarMonthDaysColor"
+                android:theme="@style/secondary_AppTheme"
+                android:weekDayTextAppearance="@style/calendarViewWeekAlphabetColor"/>
         <androidx.cardview.widget.CardView
                 android:layout_width="match_parent"
-                android:layout_height="wrap_content">
+                android:layout_height="wrap_content" app:cardCornerRadius="0dp" app:cardElevation="0dp"
+                app:cardMaxElevation="0dp" app:cardBackgroundColor="@android:color/transparent">
             <LinearLayout
-                    android:orientation="vertical"
+                    android:orientation="horizontal"
                     android:layout_width="match_parent"
-                    android:layout_height="match_parent">
+                    android:layout_height="match_parent" android:id="@+id/ll_container" android:baselineAligned="false">
                 <LinearLayout
-                        android:orientation="horizontal"
+                        android:orientation="vertical"
                         android:layout_width="match_parent"
-                        android:layout_height="match_parent" android:id="@+id/ll_titles">
+                        android:layout_height="match_parent" android:layout_weight="1" android:id="@+id/ll_proteins">
                     <TextView
-                            android:layout_width="wrap_content"
+                            android:layout_width="match_parent"
                             android:layout_height="wrap_content" android:id="@+id/tv_protein_title"
-                            android:layout_weight="1"
-                            android:gravity="center" android:text="@string/P" android:onClick="goalDisplay"
-                            android:tag="protein"/>
+                            android:gravity="center" android:text="@string/P"
+                            android:tag="protein" android:textColor="@color/red" android:padding="4dp"/>
                     <TextView
-                            android:layout_width="wrap_content"
+                            android:layout_width="match_parent"
+                            android:layout_height="wrap_content" android:id="@+id/tv_protein_current"
+                            android:gravity="center"
+                            android:textColor="@color/lighterGrey" android:padding="4dp"/>
+                    <TextView
+                            android:layout_width="match_parent"
+                            android:layout_height="wrap_content" android:id="@+id/tv_protein_remain" android:gravity="center" android:padding="4dp"/>
+                </LinearLayout>
+                <LinearLayout
+                        android:orientation="vertical"
+                        android:layout_width="match_parent"
+                        android:layout_height="match_parent" android:layout_weight="1" android:id="@+id/ll_carbs">
+                    <TextView
+                            android:layout_width="match_parent"
                             android:layout_height="wrap_content" android:id="@+id/tv_carbs_title"
-                            android:layout_weight="1"
-                            android:gravity="center" android:text="@string/C" android:onClick="goalDisplay"
-                            android:tag="carbs"/>
+                            android:gravity="center" android:text="@string/C"
+                            android:tag="carbs" android:textColor="@color/green" android:padding="4dp"/>
                     <TextView
-                            android:layout_width="wrap_content"
+                            android:layout_width="match_parent"
+                            android:layout_height="wrap_content" android:id="@+id/tv_carbs_current" android:gravity="center"
+                            android:textColor="@color/lighterGrey"
+                            android:padding="4dp"/>
+                    <TextView
+                            android:layout_width="match_parent"
+                            android:layout_height="wrap_content" android:id="@+id/tv_carbs_remain" android:gravity="center" android:padding="4dp"/>
+                </LinearLayout>
+                <LinearLayout
+                        android:orientation="vertical"
+                        android:layout_width="match_parent"
+                        android:layout_height="match_parent" android:layout_weight="1" android:id="@+id/ll_fats">
+                    <TextView
+                            android:layout_width="match_parent"
                             android:layout_height="wrap_content" android:id="@+id/tv_fat_title"
-                            android:layout_weight="1"
-                            android:gravity="center" android:text="@string/F" android:onClick="goalDisplay"
-                            android:tag="fat"/>
+                            android:gravity="center" android:text="@string/F"
+                            android:tag="fat" android:textColor="@color/yellow" android:padding="4dp"/>
+                    <TextView
+                            android:layout_width="match_parent"
+                            android:layout_height="wrap_content" android:id="@+id/tv_fat_current" android:gravity="center"
+                            android:textColor="@color/lighterGrey"
+                            android:padding="4dp"/>
+                    <TextView
+                            android:layout_width="match_parent"
+                            android:layout_height="wrap_content" android:id="@+id/tv_fat_remain" android:gravity="center" android:padding="4dp"/>
+                </LinearLayout>
+                <LinearLayout
+                        android:orientation="vertical"
+                        android:layout_width="match_parent"
+                        android:layout_height="match_parent" android:layout_weight="1" android:id="@+id/ll_calories">
                     <TextView
                             android:text="@string/cal"
-                            android:layout_width="wrap_content"
-                            android:layout_height="wrap_content" android:id="@+id/tv_cal_title"
-                            android:layout_weight="1" android:gravity="center" android:onClick="goalDisplay"
-                            android:tag="calories"/>
-                </LinearLayout>
-                <LinearLayout
-                        android:orientation="horizontal"
-                        android:layout_width="match_parent"
-                        android:layout_height="match_parent" android:id="@+id/ll_currents">
+                            android:layout_width="match_parent"
+                            android:layout_height="wrap_content" android:id="@+id/tv_cal_title" android:gravity="center"
+                            android:tag="calories" android:textColor="@color/light_blue" android:padding="4dp"/>
                     <TextView
-                            android:layout_width="wrap_content"
-                            android:layout_height="wrap_content" android:id="@+id/tv_protein_current"
-                            android:layout_weight="1" android:gravity="center"/>
+                            android:layout_width="match_parent"
+                            android:layout_height="wrap_content" android:id="@+id/tv_cal_current" android:gravity="center"
+                            android:textColor="@color/lighterGrey"
+                            android:padding="4dp"/>
                     <TextView
-                            android:layout_width="wrap_content"
-                            android:layout_height="wrap_content" android:id="@+id/tv_carbs_current"
-                            android:layout_weight="1" android:gravity="center"/>
-                    <TextView
-                            android:layout_width="wrap_content"
-                            android:layout_height="wrap_content" android:id="@+id/tv_fat_current"
-                            android:layout_weight="1" android:gravity="center"/>
-                    <TextView
-                            android:layout_width="wrap_content"
-                            android:layout_height="wrap_content" android:id="@+id/tv_cal_current"
-                            android:layout_weight="1" android:gravity="center"/>
-                </LinearLayout>
-                <LinearLayout
-                        android:orientation="horizontal"
-                        android:layout_width="match_parent"
-                        android:layout_height="match_parent" android:id="@+id/ll_remain">
-                    <TextView
-                            android:layout_width="wrap_content"
-                            android:layout_height="wrap_content" android:id="@+id/tv_protein_remain"
-                            android:layout_weight="1" android:gravity="center"/>
-                    <TextView
-                            android:layout_width="wrap_content"
-                            android:layout_height="wrap_content" android:id="@+id/tv_carbs_remain"
-                            android:layout_weight="1" android:gravity="center"/>
-                    <TextView
-                            android:layout_width="wrap_content"
-                            android:layout_height="wrap_content" android:id="@+id/tv_fat_remain"
-                            android:layout_weight="1" android:gravity="center"/>
-                    <TextView
-                            android:layout_width="wrap_content"
-                            android:layout_height="wrap_content" android:id="@+id/tv_cal_remain"
-                            android:layout_weight="1" android:gravity="center"/>
+                            android:layout_width="match_parent"
+                            android:layout_height="wrap_content" android:id="@+id/tv_cal_remain" android:gravity="center" android:padding="4dp"/>
                 </LinearLayout>
             </LinearLayout>
         </androidx.cardview.widget.CardView>
