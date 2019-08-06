@@ -11,9 +11,13 @@ import com.example.macrocounterremaster.R
 import com.example.macrocounterremaster.utils.Constants
 import kotlinx.android.synthetic.main.fragment_stage_one.view.*
 
-class LoginFragmentOne(layout_id: Int): Fragment() {
-    val layout : Int = layout_id
+class LoginFragmentOne(): Fragment() {
+    var layout : Int = 0
     private lateinit var listener: NextStage
+
+    constructor (id : Int) : this() {
+        layout = id
+    }
 
     interface NextStage{
         fun proceed()
@@ -31,7 +35,7 @@ class LoginFragmentOne(layout_id: Int): Fragment() {
     override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View? {
         val view: View = inflater.inflate(layout, container, false)
 
-        view.button2.setOnClickListener { listener.proceed() }
+        view.btnNext.setOnClickListener { listener.proceed() }
 
         // Return the fragment view/layout
         return view

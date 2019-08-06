@@ -20,4 +20,15 @@
     <string name="C">C</string>
     <string name="F">F</string>
     <string name="cal">CAL</string>
+
+    <string name="name">Name</string>
+    <string name="email">Email Address</string>
+    <string name="password">Password</string>
+    <string name="next">Next</string>
+    <string name="back">Back</string>
+    <string name="register">Register</string>
+
+    <string name="protein_goal">Daily protein intake</string>
+    <string name="carb_goal">Daily carbohydrate intake</string>
+    <string name="fat_goal">Daily fat intake</string>
 </resources>

@@ -14,20 +14,28 @@ import com.example.macrocounterremaster.fragments.LoginFragmentOne
 import com.example.macrocounterremaster.fragments.LoginFragmentTwo
 import com.google.android.material.navigation.NavigationView
 
-class LoginActivity: AppCompatActivity(), NavigationView.OnNavigationItemSelectedListener, LoginFragmentOne.NextStage, LoginFragmentTwo.PreviousStage {
+class RegisterActivity: AppCompatActivity(), NavigationView.OnNavigationItemSelectedListener, LoginFragmentOne.NextStage, LoginFragmentTwo.PreviousStage {
 
     // interface from LoginFragmentTwo
     override fun goBack() {
-        val fragmentTransaction = supportFragmentManager.beginTransaction()
-        fragmentTransaction.replace(R.id.ll_fragment_container, LoginFragmentOne(R.layout.fragment_stage_one))
-        fragmentTransaction.addToBackStack(null)
-        fragmentTransaction.commit()
+        fragmentController(fragmentOne = true, fragmentTwo = false)
     }
 
     // interface from LoginFragmentOne
     override fun proceed() {
+        fragmentController(fragmentOne = false, fragmentTwo = true)
+    }
+
+    private fun fragmentController(fragmentOne: Boolean, fragmentTwo: Boolean){
         val fragmentTransaction = supportFragmentManager.beginTransaction()
-        fragmentTransaction.replace(R.id.ll_fragment_container, LoginFragmentTwo(R.layout.fragment_stage_two))
+
+        if(fragmentOne) {
+            fragmentTransaction.replace(R.id.ll_fragment_container, LoginFragmentOne(R.layout.fragment_stage_one))
+        }
+        if(fragmentTwo){
+            fragmentTransaction.replace(R.id.ll_fragment_container, LoginFragmentTwo(R.layout.fragment_stage_two))
+        }
+
         fragmentTransaction.addToBackStack(null)
         fragmentTransaction.commit()
     }
@@ -47,8 +55,9 @@ class LoginActivity: AppCompatActivity(), NavigationView.OnNavigationItemSelecte
 
         navView.setNavigationItemSelectedListener(this)
 
-        val fragment = LoginFragmentOne(R.layout.fragment_stage_one)
-        supportFragmentManager.beginTransaction().add(R.id.ll_fragment_container, fragment).commit()
+        if(savedInstanceState == null){
+            supportFragmentManager.beginTransaction().add(R.id.ll_fragment_container, LoginFragmentOne(R.layout.fragment_stage_one)).commit()
+        }
     }
 
     override fun onBackPressed() {
@@ -72,14 +81,16 @@ class LoginActivity: AppCompatActivity(), NavigationView.OnNavigationItemSelecte
             R.id.nav_home -> {
                 finish()
             }
-            R.id.nav_login -> {
-                startActivity(Intent(this@LoginActivity, LoginActivity::class.java))
+            R.id.nav_register -> {
+                startActivity(Intent(this@RegisterActivity, RegisterActivity::class.java))
                 finish()
+            }
+            R.id.nav_login -> {
+
             }
         }
         val drawerLayout: DrawerLayout = findViewById(R.id.drawer_layout)
         drawerLayout.closeDrawer(GravityCompat.START)
         return true
     }
-
 }

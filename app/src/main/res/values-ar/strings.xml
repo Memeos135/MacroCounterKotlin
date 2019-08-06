@@ -20,4 +20,15 @@
     <string name="C">ك</string>
     <string name="F">د</string>
     <string name="cal">كالوري</string>
+
+    <string name="name">الإسم</string>
+    <string name="email">البريد الإلكتروني</string>
+    <string name="password">كلمة السر</string>
+    <string name="next">التالي</string>
+    <string name="back">السابق</string>
+    <string name="register">تسجيل</string>
+
+    <string name="protein_goal">الإحتياج اليومي للبروتين</string>
+    <string name="carb_goal">الإحتياج اليومي للكربوهيدرات</string>
+    <string name="fat_goal">الإحتياج اليومي للدهون</string>
 </resources>

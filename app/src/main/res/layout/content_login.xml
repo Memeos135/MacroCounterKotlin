@@ -7,7 +7,7 @@
         android:layout_height="match_parent"
         app:layout_behavior="@string/appbar_scrolling_view_behavior"
         tools:showIn="@layout/app_bar_login"
-        tools:context=".activities.LoginActivity" android:background="@color/darkGray">
+        tools:context=".activities.RegisterActivity" android:background="@color/darkGray">
 
     <LinearLayout
             android:layout_width="match_parent"

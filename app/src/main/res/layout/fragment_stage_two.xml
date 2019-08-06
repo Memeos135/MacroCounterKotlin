@@ -2,10 +2,49 @@
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
               android:orientation="vertical"
               android:layout_width="match_parent"
-              android:layout_height="match_parent">
-
-    <Button
-            android:text="Button"
+              android:layout_height="match_parent" android:layout_marginLeft="48dp" android:layout_marginStart="48dp"
+              android:layout_marginEnd="48dp" android:layout_marginRight="48dp"
+              android:layout_marginTop="72dp" android:layout_marginBottom="72dp">
+    <EditText
             android:layout_width="match_parent"
-            android:layout_height="wrap_content" android:id="@+id/button" android:layout_marginTop="32dp"/>
+            android:layout_height="wrap_content"
+            android:inputType="number"
+            android:ems="10"
+            android:id="@+id/et_protein_goal" android:background="@drawable/underline"
+            android:hint="@string/protein_goal"
+            android:textColorHint="@color/lighterGrey" android:textColor="@color/darker_light_blue"
+            android:paddingTop="48dp"/>
+    <EditText
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:inputType="number"
+            android:ems="10"
+            android:id="@+id/et_carb_goal" android:background="@drawable/underline" android:hint="@string/carb_goal"
+            android:textColorHint="@color/lighterGrey" android:textColor="@color/darker_light_blue"
+            android:paddingTop="48dp"/>
+    <EditText
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:inputType="number"
+            android:ems="10"
+            android:id="@+id/et_fat_goal" android:background="@drawable/underline" android:hint="@string/fat_goal"
+            android:textColorHint="@color/lighterGrey" android:textColor="@color/darker_light_blue"
+            android:paddingTop="48dp"/>
+    <LinearLayout
+            android:orientation="horizontal"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent" android:layout_marginTop="72dp">
+        <Button
+                android:text="@string/back"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content" android:id="@+id/btnBack" android:layout_weight="1"
+                android:background="@drawable/button_border" android:foreground="?attr/selectableItemBackground"
+                android:textColor="@color/white" android:layout_margin="2dp"/>
+        <Button
+                android:text="@string/register"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content" android:id="@+id/btnNext"
+                android:background="@drawable/button_border" android:foreground="?attr/selectableItemBackground"
+                android:textColor="@color/white" android:layout_weight="1" android:layout_margin="2dp"/>
+    </LinearLayout>
 </LinearLayout>

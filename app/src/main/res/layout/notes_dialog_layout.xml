@@ -1,0 +1,23 @@
+<?xml version="1.0" encoding="utf-8"?>
+<androidx.cardview.widget.CardView
+        xmlns:android="http://schemas.android.com/apk/res/android"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent">
+
+    <EditText
+            android:id="@+id/msg_text"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:background="@android:color/transparent"
+            android:ems="10"
+            android:gravity="center"
+            android:inputType="textPersonName|textMultiLine"
+            android:paddingStart="40dp"
+            android:paddingTop="8dp"
+            android:paddingEnd="40dp"
+            android:paddingBottom="8dp"
+            android:textColor="@color/darker_light_blue"
+            android:textColorHint="@color/lighterGrey"
+            android:textSize="14sp"/>
+
+</androidx.cardview.widget.CardView>
