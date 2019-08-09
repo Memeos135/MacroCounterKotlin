@@ -71,13 +71,13 @@
                                 android:layout_width="match_parent"
                                 android:layout_height="wrap_content" android:id="@+id/tv_protein_current"
                                 android:gravity="center"
-                                android:textColor="@color/lighterGrey" android:padding="4dp" android:text="148"
+                                android:textColor="@color/lighterGrey" android:padding="4dp"
                                 android:layout_marginTop="8dp"/>
                         <TextView
                                 android:layout_width="match_parent"
                                 android:layout_height="wrap_content" android:id="@+id/tv_protein_remain"
                                 android:gravity="center" android:padding="4dp"
-                                android:text="148" android:textColor="@color/white"
+                                android:textColor="@color/white"
                                 android:layout_marginTop="8dp"/>
                     </LinearLayout>
                     <LinearLayout
@@ -95,12 +95,12 @@
                                 android:layout_height="wrap_content" android:id="@+id/tv_carbs_current"
                                 android:gravity="center"
                                 android:textColor="@color/lighterGrey"
-                                android:padding="4dp" android:text="148" android:layout_marginTop="8dp"/>
+                                android:padding="4dp" android:layout_marginTop="8dp"/>
                         <TextView
                                 android:layout_width="match_parent"
                                 android:layout_height="wrap_content" android:id="@+id/tv_carbs_remain"
                                 android:gravity="center" android:padding="4dp"
-                                android:text="148" android:textColor="@color/white"
+                                android:textColor="@color/white"
                                 android:layout_marginTop="8dp"/>
                     </LinearLayout>
                     <LinearLayout
@@ -117,12 +117,12 @@
                                 android:layout_height="wrap_content" android:id="@+id/tv_fat_current"
                                 android:gravity="center"
                                 android:textColor="@color/lighterGrey"
-                                android:padding="4dp" android:text="148" android:layout_marginTop="8dp"/>
+                                android:padding="4dp" android:layout_marginTop="8dp"/>
                         <TextView
                                 android:layout_width="match_parent"
                                 android:layout_height="wrap_content" android:id="@+id/tv_fat_remain"
                                 android:gravity="center" android:padding="4dp"
-                                android:text="148" android:textColor="@color/white"
+                                android:textColor="@color/white"
                                 android:layout_marginTop="8dp"/>
                     </LinearLayout>
                     <LinearLayout
@@ -142,12 +142,12 @@
                                 android:layout_height="wrap_content" android:id="@+id/tv_cal_current"
                                 android:gravity="center"
                                 android:textColor="@color/lighterGrey"
-                                android:padding="4dp" android:text="148" android:layout_marginTop="8dp"/>
+                                android:padding="4dp" android:layout_marginTop="8dp"/>
                         <TextView
                                 android:layout_width="match_parent"
                                 android:layout_height="wrap_content" android:id="@+id/tv_cal_remain"
                                 android:gravity="center" android:padding="4dp"
-                                android:text="148" android:textColor="@color/white"
+                                android:textColor="@color/white"
                                 android:layout_marginTop="8dp"/>
                     </LinearLayout>
                 </LinearLayout>
