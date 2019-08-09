@@ -10,39 +10,14 @@ import androidx.appcompat.widget.Toolbar
 import androidx.core.view.GravityCompat
 import androidx.drawerlayout.widget.DrawerLayout
 import com.example.macrocounterremaster.R
-import com.example.macrocounterremaster.fragments.LoginFragmentOne
-import com.example.macrocounterremaster.fragments.LoginFragmentTwo
 import com.google.android.material.navigation.NavigationView
+import com.google.android.material.snackbar.Snackbar
+import kotlinx.android.synthetic.main.content_login.*
 
-class RegisterActivity: AppCompatActivity(), NavigationView.OnNavigationItemSelectedListener, LoginFragmentOne.NextStage, LoginFragmentTwo.PreviousStage {
-
-    // interface from LoginFragmentTwo
-    override fun goBack() {
-        fragmentController(fragmentOne = true, fragmentTwo = false)
-    }
-
-    // interface from LoginFragmentOne
-    override fun proceed() {
-        fragmentController(fragmentOne = false, fragmentTwo = true)
-    }
-
-    private fun fragmentController(fragmentOne: Boolean, fragmentTwo: Boolean){
-        val fragmentTransaction = supportFragmentManager.beginTransaction()
-
-        if(fragmentOne) {
-            fragmentTransaction.replace(R.id.ll_fragment_container, LoginFragmentOne(R.layout.fragment_stage_one))
-        }
-        if(fragmentTwo){
-            fragmentTransaction.replace(R.id.ll_fragment_container, LoginFragmentTwo(R.layout.fragment_stage_two))
-        }
-
-        fragmentTransaction.addToBackStack(null)
-        fragmentTransaction.commit()
-    }
-
+class LoginActivity: AppCompatActivity(), NavigationView.OnNavigationItemSelectedListener {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        setContentView(R.layout.activity_register)
+        setContentView(R.layout.activity_login)
         val toolbar: Toolbar = findViewById(R.id.toolbar)
 
         val drawerLayout: DrawerLayout = findViewById(R.id.drawer_layout)
@@ -55,9 +30,11 @@ class RegisterActivity: AppCompatActivity(), NavigationView.OnNavigationItemSele
 
         navView.setNavigationItemSelectedListener(this)
 
-        if(savedInstanceState == null){
-            supportFragmentManager.beginTransaction().add(R.id.ll_fragment_container, LoginFragmentOne(R.layout.fragment_stage_one)).commit()
-        }
+        btnLogin.setOnClickListener { processLogin() }
+    }
+
+    private fun processLogin(){
+        Snackbar.make(scrollView, "It works!", Snackbar.LENGTH_SHORT).show()
     }
 
     override fun onBackPressed() {
@@ -65,7 +42,7 @@ class RegisterActivity: AppCompatActivity(), NavigationView.OnNavigationItemSele
         if (drawerLayout.isDrawerOpen(GravityCompat.START)) {
             drawerLayout.closeDrawer(GravityCompat.START)
         } else {
-            finish()
+            super.onBackPressed()
         }
     }
 
@@ -82,11 +59,11 @@ class RegisterActivity: AppCompatActivity(), NavigationView.OnNavigationItemSele
                 finish()
             }
             R.id.nav_register -> {
-                onBackPressed()
+                startActivity(Intent(this@LoginActivity, RegisterActivity::class.java))
+                finish()
             }
             R.id.nav_login -> {
-                startActivity(Intent(this@RegisterActivity, LoginActivity::class.java))
-                finish()
+                onBackPressed()
             }
         }
         val drawerLayout: DrawerLayout = findViewById(R.id.drawer_layout)

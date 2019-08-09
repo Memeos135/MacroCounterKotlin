@@ -13,6 +13,7 @@ import androidx.appcompat.app.AppCompatActivity
 import androidx.appcompat.widget.Toolbar
 import android.view.Menu
 import android.widget.TextView
+import com.example.macrocounterremaster.activities.LoginActivity
 import com.example.macrocounterremaster.activities.RegisterActivity
 import com.example.macrocounterremaster.helpers.NoteDialogHelper
 import kotlinx.android.synthetic.main.content_main.*
@@ -40,7 +41,7 @@ class MainActivity : AppCompatActivity(), NavigationView.OnNavigationItemSelecte
 
         navView.setNavigationItemSelectedListener(this)
 
-        setupTitleListeners();
+        setupTitleListeners()
     }
 
     override fun onBackPressed() {
@@ -62,14 +63,13 @@ class MainActivity : AppCompatActivity(), NavigationView.OnNavigationItemSelecte
         // Handle navigation view item clicks here.
         when (item.itemId) {
             R.id.nav_home -> {
-                startActivity(Intent(this@MainActivity, MainActivity::class.java))
-                finish()
+                onBackPressed()
             }
             R.id.nav_register -> {
                 startActivity(Intent(this@MainActivity, RegisterActivity::class.java))
             }
             R.id.nav_login -> {
-
+                startActivity(Intent(this@MainActivity, LoginActivity::class.java))
             }
         }
         val drawerLayout: DrawerLayout = findViewById(R.id.drawer_layout)

@@ -23,7 +23,7 @@
     </style>
 
     <style name="secondary_AppTheme" parent="Theme.AppCompat.Light.DarkActionBar">
-        <item name="colorPrimaryDark">@color/darkGray</item>
+        <item name="colorPrimaryDark">@color/colorPrimaryDark</item>
         <item name="colorAccent">@color/white</item>
         <item name="android:textColorPrimary">@color/white</item>
     </style>
