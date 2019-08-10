@@ -31,4 +31,7 @@
     <string name="protein_goal">Daily protein intake</string>
     <string name="carb_goal">Daily carbohydrate intake</string>
     <string name="fat_goal">Daily fat intake</string>
+
+    <string name="authorization" translatable="false">Authorization</string>
+    <string name="bearer" translatable="false">Bearer</string>
 </resources>

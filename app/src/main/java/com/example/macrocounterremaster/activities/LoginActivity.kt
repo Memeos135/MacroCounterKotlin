@@ -2,6 +2,7 @@ package com.example.macrocounterremaster.activities
 
 import android.content.Intent
 import android.os.Bundle
+import android.util.Log
 import android.view.Menu
 import android.view.MenuItem
 import androidx.appcompat.app.ActionBarDrawerToggle
@@ -10,8 +11,9 @@ import androidx.appcompat.widget.Toolbar
 import androidx.core.view.GravityCompat
 import androidx.drawerlayout.widget.DrawerLayout
 import com.example.macrocounterremaster.R
+import com.example.macrocounterremaster.webServices.ServicePost
+import com.example.macrocounterremaster.webServices.requests.LoginRequestModel
 import com.google.android.material.navigation.NavigationView
-import com.google.android.material.snackbar.Snackbar
 import kotlinx.android.synthetic.main.content_login.*
 
 class LoginActivity: AppCompatActivity(), NavigationView.OnNavigationItemSelectedListener {
@@ -34,7 +36,8 @@ class LoginActivity: AppCompatActivity(), NavigationView.OnNavigationItemSelecte
     }
 
     private fun processLogin(){
-        Snackbar.make(scrollView, "It works!", Snackbar.LENGTH_SHORT).show()
+        val result: String = ServicePost.doPostToken(LoginRequestModel(et_email_address.text.toString(), et_password.text.toString(), getString(R.string.token_url)), false, this)
+        Log.i("XXX", result)
     }
 
     override fun onBackPressed() {
