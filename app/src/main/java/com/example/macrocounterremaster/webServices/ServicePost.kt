@@ -35,7 +35,6 @@ class ServicePost {
 
             return if(response.code() == 200){
                 val loginResponseModel: LoginResponseModel = Gson().fromJson(response.body()!!.string(), LoginResponseModel::class.java)
-                loginResponseModel.setCode(response.code().toString() + " - " + ErrorMapCreator.getHashMap(activity)[response.code().toString()])
                 loginResponseModel
 
             }else{

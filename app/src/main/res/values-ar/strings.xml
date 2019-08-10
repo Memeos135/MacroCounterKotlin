@@ -31,4 +31,6 @@
     <string name="protein_goal">الإحتياج اليومي للبروتين</string>
     <string name="carb_goal">الإحتياج اليومي للكربوهيدرات</string>
     <string name="fat_goal">الإحتياج اليومي للدهون</string>
+
+    <string name="logging">يتم الأن تسجيل الدخول</string>
 </resources>
