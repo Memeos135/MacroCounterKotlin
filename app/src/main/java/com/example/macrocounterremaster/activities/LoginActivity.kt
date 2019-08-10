@@ -1,6 +1,8 @@
 package com.example.macrocounterremaster.activities
 
 import android.content.Intent
+import android.os.AsyncTask
+import android.os.Build
 import android.os.Bundle
 import android.util.Log
 import android.view.Menu
@@ -13,8 +15,10 @@ import androidx.drawerlayout.widget.DrawerLayout
 import com.example.macrocounterremaster.R
 import com.example.macrocounterremaster.webServices.ServicePost
 import com.example.macrocounterremaster.webServices.requests.LoginRequestModel
+import com.example.macrocounterremaster.webServices.responses.LoginResponseModel
 import com.google.android.material.navigation.NavigationView
 import kotlinx.android.synthetic.main.content_login.*
+import java.lang.ref.WeakReference
 
 class LoginActivity: AppCompatActivity(), NavigationView.OnNavigationItemSelectedListener {
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -36,8 +40,8 @@ class LoginActivity: AppCompatActivity(), NavigationView.OnNavigationItemSelecte
     }
 
     private fun processLogin(){
-        val result: String = ServicePost.doPostToken(LoginRequestModel(et_email_address.text.toString(), et_password.text.toString(), getString(R.string.token_url)), false, this)
-        Log.i("XXX", result)
+//        Snackbar.make(scrollView, "It works", Snackbar.LENGTH_SHORT).show()
+        LoginAsyncTask(et_email_address.text.toString(), et_password.text.toString(), getString(R.string.token_url), this).execute()
     }
 
     override fun onBackPressed() {
@@ -72,5 +76,40 @@ class LoginActivity: AppCompatActivity(), NavigationView.OnNavigationItemSelecte
         val drawerLayout: DrawerLayout = findViewById(R.id.drawer_layout)
         drawerLayout.closeDrawer(GravityCompat.START)
         return true
+    }
+
+    class LoginAsyncTask(private val username: String, private val password: String, private val url: String, loginActivity: LoginActivity): AsyncTask<Void, Void, LoginResponseModel>() {
+        private var weakReference: WeakReference<LoginActivity> = WeakReference(loginActivity)
+
+        override fun onPreExecute() {
+            super.onPreExecute()
+            val loginActivity: LoginActivity = weakReference.get()!!
+
+            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.JELLY_BEAN_MR1) {
+                // do progress dialog
+            }
+        }
+
+        override fun doInBackground(vararg p0: Void?): LoginResponseModel {
+            val loginActivity: LoginActivity = weakReference.get()!!
+
+            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.JELLY_BEAN_MR1) {
+                if(!loginActivity.isDestroyed){
+                    return ServicePost.doPostToken(LoginRequestModel(username, password, url), false, loginActivity)
+                }
+            }
+            return LoginResponseModel()
+        }
+
+        override fun onPostExecute(result: LoginResponseModel?) {
+            super.onPostExecute(result)
+            val loginActivity: LoginActivity = weakReference.get()!!
+
+            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.JELLY_BEAN_MR1) {
+                if(!loginActivity.isDestroyed){
+                    Log.i("XXX", result!!.getCode())
+                }
+            }
+        }
     }
 }

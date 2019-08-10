@@ -34,4 +34,55 @@
 
     <string name="authorization" translatable="false">Authorization</string>
     <string name="bearer" translatable="false">Bearer</string>
+
+    <string name="internet_unavailable" translatable="false">INTERNET UNAVAILABLE</string>
+    <string name="ok" translatable="false">OK</string>
+    <string name="created" translatable="false">CREATED</string>
+    <string name="accepted" translatable="false">ACCEPTED</string>
+    <string name="no_content" translatable="false">NO CONTENT</string>
+    <string name="reset_content" translatable="false">RESET CONTENT</string>
+    <string name="partial_content" translatable="false">PARTIAL CONTENT</string>
+    <string name="multi_status" translatable="false">MULTI STATUS</string>
+    <string name="already_reported" translatable="false">ALREADY REPORTED</string>
+    <string name="im_used" translatable="false">IM USED</string>
+    <string name="multiple_choices" translatable="false">MULTIPLE CHOICES</string>
+    <string name="moved_permanently" translatable="false">MOVED PERMANENTLY</string>
+    <string name="found" translatable="false">FOUND</string>
+    <string name="see_other" translatable="false">SEE OTHER</string>
+    <string name="not_modified" translatable="false">NOT MODIFIED</string>
+    <string name="use_proxy" translatable="false">USE PROXY</string>
+    <string name="unused" translatable="false">UNUSED</string>
+    <string name="temporary_redirect" translatable="false">TEMPORARY REDIRECT</string>
+    <string name="permanent_redirect" translatable="false">PERMANENT REDIRECT</string>
+    <string name="bad_request" translatable="false">BAD REQUEST</string>
+    <string name="unauthorized" translatable="false">UNAUTHORIZED</string>
+    <string name="payment_required" translatable="false">PAYMENT REQUIRED</string>
+    <string name="FORBIDDEN" translatable="false">FORBIDDEN</string>
+    <string name="not_found" translatable="false">NOT FOUND</string>
+    <string name="method_not_allowed" translatable="false">METHOD NOT ALLOWED</string>
+    <string name="not_acceptable" translatable="false">NOT ACCEPTABLE</string>
+    <string name="proxy_authentication_required" translatable="false">PROXY AUTHENTICATION REQUIRED</string>
+    <string name="request_timeout" translatable="false">REQUEST TIMEOUT</string>
+    <string name="conflict" translatable="false">CONFLICT</string>
+    <string name="gone" translatable="false">GONE</string>
+    <string name="length_required" translatable="false">LENGTH REQUIRED</string>
+    <string name="precondition_failed" translatable="false">PRECONDITION FAILED</string>
+    <string name="request_entity_too_large" translatable="false">REQUEST ENTITY TOO LARGE</string>
+    <string name="request_uri_too_large" translatable="false">REQUEST URI TOO LARGE </string>
+    <string name="unsupported_media_type" translatable="false">UNSUPPORTED MEDIA TYPE</string>
+    <string name="request_range_unsatisfied" translatable="false">REQUEST RANGE UNSATISFIED</string>
+    <string name="expectation_failed" translatable="false">EXPECTATION FAILED</string>
+    <string name="upgrade_required" translatable="false">UPGRADE REQUIRED</string>
+    <string name="precondition_required" translatable="false">PRECONDITION REQUIRED</string>
+    <string name="too_many_requests" translatable="false">TOO MANY REQUESTS</string>
+    <string name="request_headers_too_large" translatable="false">REQUEST HEADERS TOO LRAGE</string>
+    <string name="internal_server_error" translatable="false">INTERNAL SERVER ERROR</string>
+    <string name="not_implemented" translatable="false">NOT IMPLEMENTED</string>
+    <string name="bad_gateway" translatable="false">BAD GATEWAY</string>
+    <string name="service_unavailable" translatable="false">SERVICE UNAVAILABLE</string>
+    <string name="gateway_timeout" translatable="false">GATEWAY TIMEOUT</string>
+    <string name="network_authentication_required" translatable="false">NETWORK AUTHENTICATION REQUIRED</string>
+    <string name="network_read_timeout_error" translatable="false">NETWORK READ TIMEOUT ERROR</string>
+    <string name="network_connect_timeout_error" translatable="false">NETWORK CONNECT TIMEOUT ERROR</string>
+    <string name="forbidden" translatable="false">FORBIDDEN</string>
 </resources>
