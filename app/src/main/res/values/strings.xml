@@ -32,6 +32,8 @@
     <string name="carb_goal">Daily carbohydrate intake</string>
     <string name="fat_goal">Daily fat intake</string>
     <string name="logging">Logging in…</string>
+    <string name="fill_empty_fields">Please fill empty fields</string>
+    <string name="uncorrect_email">Email format is incorrect</string>
 
     <string name="authorization" translatable="false">Authorization</string>
     <string name="bearer" translatable="false">Bearer</string>

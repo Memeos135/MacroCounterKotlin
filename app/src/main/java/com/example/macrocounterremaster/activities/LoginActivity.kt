@@ -5,7 +5,6 @@ import android.content.Intent
 import android.os.AsyncTask
 import android.os.Build
 import android.os.Bundle
-import android.util.Log
 import android.view.Menu
 import android.view.MenuItem
 import androidx.appcompat.app.ActionBarDrawerToggle
@@ -42,9 +41,26 @@ class LoginActivity: AppCompatActivity(), NavigationView.OnNavigationItemSelecte
         btnLogin.setOnClickListener { processLogin() }
     }
 
-    private fun processLogin(){
-//        Snackbar.make(scrollView, "It works", Snackbar.LENGTH_SHORT).show()
-        LoginAsyncTask(et_email_address.text.toString(), et_password.text.toString(), getString(R.string.token_url), this).execute()
+    private fun processLogin() {
+        if (et_email_address.text.toString().isNotEmpty() && et_password.text.toString().isNotEmpty()) {
+            if(regexEmail(et_email_address.text.toString())) {
+                LoginAsyncTask(
+                    et_email_address.text.toString(),
+                    et_password.text.toString(),
+                    getString(R.string.token_url),
+                    this
+                ).execute()
+            }else{
+                Snackbar.make(scrollView, getString(R.string.uncorrect_email), Snackbar.LENGTH_SHORT).show()
+            }
+        }else{
+            Snackbar.make(scrollView, getString(R.string.fill_empty_fields), Snackbar.LENGTH_SHORT).show()
+        }
+    }
+
+    private fun regexEmail(email: String): Boolean{
+        // using built in matcher for email regex
+        return android.util.Patterns.EMAIL_ADDRESS.matcher(email).matches()
     }
 
     override fun onBackPressed() {

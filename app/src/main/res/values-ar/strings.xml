@@ -27,6 +27,8 @@
     <string name="next">التالي</string>
     <string name="back">السابق</string>
     <string name="register">تسجيل</string>
+    <string name="fill_empty_fields">الرجاء تعبئة الفراغات</string>
+    <string name="uncorrect_email">هيكل البريد الإلكتروني غير صحيح</string>
 
     <string name="protein_goal">الإحتياج اليومي للبروتين</string>
     <string name="carb_goal">الإحتياج اليومي للكربوهيدرات</string>

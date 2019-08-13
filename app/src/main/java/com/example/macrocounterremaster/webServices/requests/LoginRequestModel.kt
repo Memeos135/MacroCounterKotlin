@@ -14,7 +14,7 @@ class LoginRequestModel() {
     }
 
     fun getPostFormat(): String{
-        return "username=$username&password=$password"
+        return "{ \"email\": \"$username\",\"password\": \"$password\" }"
     }
 
     fun setAccessToken(access_token: String){
