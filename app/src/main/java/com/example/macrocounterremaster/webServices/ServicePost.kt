@@ -13,9 +13,15 @@ import java.util.concurrent.TimeUnit
 
 class ServicePost {
     companion object {
+        private fun error(responseCode: Int, activity: Activity):LoginResponseModel{
+            val loginResponseModel = LoginResponseModel()
+            loginResponseModel.setCode(responseCode.toString() + " - " + ErrorMapCreator.getHashMap(activity)[responseCode.toString()])
+            return loginResponseModel
+        }
+
         fun doPostToken(loginRequestModel: LoginRequestModel, login: Boolean, activity: Activity): LoginResponseModel {
 
-            try {
+            return try {
                 val client: OkHttpClient = OkHttpClient.Builder()
                     .connectTimeout(15, TimeUnit.SECONDS)
                     .writeTimeout(60, TimeUnit.SECONDS)
@@ -39,16 +45,15 @@ class ServicePost {
 
                 val response: Response = client.newCall(requestBuilder.build()).execute()
 
-                return when {
-                    response.code() == 200 -> Gson().fromJson(response.body()!!.string(), LoginResponseModel::class.java)
-                    else -> {
-                        val loginResponseModel = LoginResponseModel()
-                        loginResponseModel.setCode(response.code().toString() + " - " + ErrorMapCreator.getHashMap(activity)[response.code().toString()])
-                        loginResponseModel
-                    }
+                if (response.code() == 200 && !response.body()!!.string().contains(Constants.MESSAGE)) {
+                    return Gson().fromJson(response.body()!!.string(), LoginResponseModel::class.java)
+                } else if (response.code() == 200 && response.body()!!.string().contains(Constants.MESSAGE)) {
+                    error(response.code(), activity)
+                } else {
+                    error(response.code(), activity)
                 }
 
-            }catch (e: Exception){
+            } catch (e: Exception) {
                 e.printStackTrace()
                 val loginResponseModel = LoginResponseModel()
                 loginResponseModel.setCode(ErrorMapCreator.getHashMap(activity)[Constants.ZERO].toString())

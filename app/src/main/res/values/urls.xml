@@ -2,5 +2,6 @@
 <resources>
     <string name="x_urlencoded" translatable="false">application/x-www-form-urlencoded; charset=utf-8</string>
     <string name="json" translatable="false">application/json; charset=utf-8</string>
-    <string name="token_url" translatable="false">http://13.235.198.182/getToken</string>
+    <string name="token_url" translatable="false">http://35.154.196.173/getTokenLogin</string>
+    <string name="signup_url" translatable="false">http://35.154.196.173/signup</string>
 </resources>
