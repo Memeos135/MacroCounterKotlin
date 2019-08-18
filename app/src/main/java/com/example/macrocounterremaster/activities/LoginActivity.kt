@@ -5,7 +5,6 @@ import android.content.Intent
 import android.os.AsyncTask
 import android.os.Build
 import android.os.Bundle
-import android.util.Log
 import android.view.Menu
 import android.view.MenuItem
 import androidx.appcompat.app.ActionBarDrawerToggle
@@ -14,6 +13,7 @@ import androidx.appcompat.widget.Toolbar
 import androidx.core.view.GravityCompat
 import androidx.drawerlayout.widget.DrawerLayout
 import com.example.macrocounterremaster.R
+import com.example.macrocounterremaster.helpers.EmailHelper
 import com.example.macrocounterremaster.helpers.ProgressDialogHelper
 import com.example.macrocounterremaster.webServices.ServicePost
 import com.example.macrocounterremaster.webServices.requests.LoginRequestModel
@@ -43,11 +43,11 @@ class LoginActivity: AppCompatActivity(), NavigationView.OnNavigationItemSelecte
     }
 
     private fun processLogin() {
-        if (et_email_address.text.toString().isNotEmpty() && et_password.text.toString().isNotEmpty()) {
-            if(regexEmail(et_email_address.text.toString())) {
+        if (et_email_address.text.toString().isNotEmpty() && et_fat.text.toString().isNotEmpty()) {
+            if(EmailHelper.regexEmail(et_email_address.text.toString())) {
                 LoginAsyncTask(
                     et_email_address.text.toString(),
-                    et_password.text.toString(),
+                    et_fat.text.toString(),
                     getString(R.string.token_url),
                     this
                 ).execute()
@@ -57,11 +57,6 @@ class LoginActivity: AppCompatActivity(), NavigationView.OnNavigationItemSelecte
         }else{
             Snackbar.make(scrollView, getString(R.string.fill_empty_fields), Snackbar.LENGTH_SHORT).show()
         }
-    }
-
-    private fun regexEmail(email: String): Boolean{
-        // using built in matcher for email regex
-        return android.util.Patterns.EMAIL_ADDRESS.matcher(email).matches()
     }
 
     override fun onBackPressed() {

@@ -12,28 +12,37 @@ import androidx.drawerlayout.widget.DrawerLayout
 import com.example.macrocounterremaster.R
 import com.example.macrocounterremaster.fragments.LoginFragmentOne
 import com.example.macrocounterremaster.fragments.LoginFragmentTwo
+import com.example.macrocounterremaster.models.FullValues
+import com.example.macrocounterremaster.models.StageOneValues
 import com.google.android.material.navigation.NavigationView
+import com.google.android.material.snackbar.Snackbar
+import kotlinx.android.synthetic.main.content_register.*
 
-class RegisterActivity: AppCompatActivity(), NavigationView.OnNavigationItemSelectedListener, LoginFragmentOne.NextStage, LoginFragmentTwo.PreviousStage {
+class RegisterActivity: AppCompatActivity(), NavigationView.OnNavigationItemSelectedListener, LoginFragmentOne.NextStage, LoginFragmentTwo.StageTwoInterface {
+    override fun register(fullValues: FullValues) {
+        // call RegisterAsyncTask
+        Snackbar.make(nsv, "TEST", Snackbar.LENGTH_SHORT).show()
+    }
 
     // interface from LoginFragmentTwo
     override fun goBack() {
-        fragmentController(fragmentOne = true, fragmentTwo = false)
+        fragmentController(fragmentOne = true, fragmentTwo = false, values = null)
     }
 
     // interface from LoginFragmentOne
-    override fun proceed() {
-        fragmentController(fragmentOne = false, fragmentTwo = true)
+    override fun proceed(stageOneValues: StageOneValues) {
+        fragmentController(fragmentOne = false, fragmentTwo = true, values = stageOneValues)
     }
 
-    private fun fragmentController(fragmentOne: Boolean, fragmentTwo: Boolean){
+    private fun fragmentController(fragmentOne: Boolean, fragmentTwo: Boolean, values: StageOneValues?){
         val fragmentTransaction = supportFragmentManager.beginTransaction()
 
         if(fragmentOne) {
             fragmentTransaction.replace(R.id.ll_fragment_container, LoginFragmentOne(R.layout.fragment_stage_one))
         }
         if(fragmentTwo){
-            fragmentTransaction.replace(R.id.ll_fragment_container, LoginFragmentTwo(R.layout.fragment_stage_two))
+            fragmentTransaction.replace(R.id.ll_fragment_container, LoginFragmentTwo(R.layout.fragment_stage_two, values!!
+            ))
         }
 
         fragmentTransaction.addToBackStack(null)

@@ -4,13 +4,13 @@
               android:layout_width="match_parent"
               android:layout_height="match_parent" android:layout_marginLeft="48dp" android:layout_marginStart="48dp"
               android:layout_marginEnd="48dp" android:layout_marginRight="48dp"
-              android:layout_marginTop="72dp" android:layout_marginBottom="72dp">
+              android:layout_marginTop="72dp" android:layout_marginBottom="72dp" android:id="@+id/ll_two">
     <EditText
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:inputType="number"
             android:ems="10"
-            android:id="@+id/et_protein_goal" android:background="@drawable/underline"
+            android:id="@+id/et_protein" android:background="@drawable/underline"
             android:hint="@string/protein_goal"
             android:textColorHint="@color/lighterGrey" android:textColor="@color/darker_light_blue"
             android:paddingTop="48dp"/>
@@ -19,7 +19,7 @@
             android:layout_height="wrap_content"
             android:inputType="number"
             android:ems="10"
-            android:id="@+id/et_carb_goal" android:background="@drawable/underline" android:hint="@string/carb_goal"
+            android:id="@+id/et_carbs" android:background="@drawable/underline" android:hint="@string/carb_goal"
             android:textColorHint="@color/lighterGrey" android:textColor="@color/darker_light_blue"
             android:paddingTop="48dp"/>
     <EditText
@@ -27,7 +27,7 @@
             android:layout_height="wrap_content"
             android:inputType="number"
             android:ems="10"
-            android:id="@+id/et_fat_goal" android:background="@drawable/underline" android:hint="@string/fat_goal"
+            android:id="@+id/et_fat" android:background="@drawable/underline" android:hint="@string/fat_goal"
             android:textColorHint="@color/lighterGrey" android:textColor="@color/darker_light_blue"
             android:paddingTop="48dp"/>
     <LinearLayout
