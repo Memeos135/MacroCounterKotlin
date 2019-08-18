@@ -1,6 +1,9 @@
 package com.example.macrocounterremaster.activities
 
+import android.app.ProgressDialog
 import android.content.Intent
+import android.os.AsyncTask
+import android.os.Build
 import android.os.Bundle
 import android.view.Menu
 import android.view.MenuItem
@@ -12,16 +15,20 @@ import androidx.drawerlayout.widget.DrawerLayout
 import com.example.macrocounterremaster.R
 import com.example.macrocounterremaster.fragments.LoginFragmentOne
 import com.example.macrocounterremaster.fragments.LoginFragmentTwo
+import com.example.macrocounterremaster.helpers.ProgressDialogHelper
 import com.example.macrocounterremaster.models.FullValues
 import com.example.macrocounterremaster.models.StageOneValues
+import com.example.macrocounterremaster.webServices.ServicePost
+import com.example.macrocounterremaster.webServices.requests.RegisterRequestModel
+import com.example.macrocounterremaster.webServices.responses.RegisterResponseModel
 import com.google.android.material.navigation.NavigationView
 import com.google.android.material.snackbar.Snackbar
 import kotlinx.android.synthetic.main.content_register.*
+import java.lang.ref.WeakReference
 
 class RegisterActivity: AppCompatActivity(), NavigationView.OnNavigationItemSelectedListener, LoginFragmentOne.NextStage, LoginFragmentTwo.StageTwoInterface {
     override fun register(fullValues: FullValues) {
-        // call RegisterAsyncTask
-        Snackbar.make(nsv, "TEST", Snackbar.LENGTH_SHORT).show()
+        RegisterAsyncTask(fullValues, this).execute()
     }
 
     // interface from LoginFragmentTwo
@@ -101,5 +108,59 @@ class RegisterActivity: AppCompatActivity(), NavigationView.OnNavigationItemSele
         val drawerLayout: DrawerLayout = findViewById(R.id.drawer_layout)
         drawerLayout.closeDrawer(GravityCompat.START)
         return true
+    }
+
+    // if result code is empty >> success
+    // if result code is NOT empty >> fail
+    fun showMessage(result: RegisterResponseModel){
+        if(result.getCode().isNotEmpty()){
+            Snackbar.make(nsv, result.getCode(), Snackbar.LENGTH_SHORT).show()
+        }else{
+            // save token/username/password into sharedPreferences
+
+            // finish() + update navigationView UI and MainActivity UI
+            Snackbar.make(nsv, "it works!", Snackbar.LENGTH_SHORT).show()
+        }
+    }
+
+    class RegisterAsyncTask(private val fullValues: FullValues, registerActivity: RegisterActivity): AsyncTask<Void, Void, RegisterResponseModel>() {
+        private var weakReference: WeakReference<RegisterActivity> = WeakReference(registerActivity)
+        private var progressDialog: ProgressDialog? = null
+
+        override fun onPreExecute() {
+            super.onPreExecute()
+            val registerActivity: RegisterActivity = weakReference.get()!!
+
+            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.JELLY_BEAN_MR1) {
+                if(!registerActivity.isDestroyed){
+                    progressDialog = ProgressDialogHelper.getProgressDialog(registerActivity, R.string.logging)
+                    progressDialog!!.show()
+                }
+            }
+        }
+
+        override fun doInBackground(vararg p0: Void?): RegisterResponseModel {
+            val registerActivity: RegisterActivity = weakReference.get()!!
+
+            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.JELLY_BEAN_MR1) {
+                if(!registerActivity.isDestroyed){
+                    return ServicePost.doPostRegister(RegisterRequestModel(fullValues, registerActivity.getString(R.string.signup_url)), registerActivity)
+                }
+            }
+            return RegisterResponseModel()
+        }
+
+        override fun onPostExecute(result: RegisterResponseModel?) {
+            super.onPostExecute(result)
+            val registerActivity: RegisterActivity = weakReference.get()!!
+
+            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.JELLY_BEAN_MR1) {
+                if(!registerActivity.isDestroyed){
+                    progressDialog!!.cancel()
+
+                    registerActivity.showMessage(result!!)
+                }
+            }
+        }
     }
 }

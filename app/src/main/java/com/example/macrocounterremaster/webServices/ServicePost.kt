@@ -5,7 +5,9 @@ import com.example.macrocounterremaster.R
 import com.example.macrocounterremaster.utils.Constants
 import com.example.macrocounterremaster.utils.ErrorMapCreator
 import com.example.macrocounterremaster.webServices.requests.LoginRequestModel
+import com.example.macrocounterremaster.webServices.requests.RegisterRequestModel
 import com.example.macrocounterremaster.webServices.responses.LoginResponseModel
+import com.example.macrocounterremaster.webServices.responses.RegisterResponseModel
 import com.google.gson.Gson
 import okhttp3.*
 import java.lang.Exception
@@ -13,15 +15,51 @@ import java.util.concurrent.TimeUnit
 
 class ServicePost {
     companion object {
-        private fun error(responseCode: Int, activity: Activity):LoginResponseModel{
-            val loginResponseModel = LoginResponseModel()
-            loginResponseModel.setCode(responseCode.toString() + " - " + ErrorMapCreator.getHashMap(activity)[responseCode.toString()])
-            return loginResponseModel
+        private fun error(responseCode: Int, activity: Activity):String{
+            return responseCode.toString() + " - " + ErrorMapCreator.getHashMap(activity)[responseCode.toString()]
+        }
+
+        fun doPostRegister(registerRequestModel: RegisterRequestModel, activity: Activity): RegisterResponseModel{
+            try {
+                val client: OkHttpClient = OkHttpClient.Builder()
+                    .connectTimeout(15, TimeUnit.SECONDS)
+                    .writeTimeout(60, TimeUnit.SECONDS)
+                    .readTimeout(30, TimeUnit.SECONDS)
+                    .build()
+
+                val body: RequestBody = RequestBody.create(
+                    MediaType.parse(activity.getString(R.string.x_urlencoded)),
+                    registerRequestModel.getPostFormat()
+                )
+                val requestBuilder: Request.Builder = Request.Builder()
+                    .url(registerRequestModel.url)
+                    .post(body)
+
+                val response: Response = client.newCall(requestBuilder.build()).execute()
+
+                return if (response.code() == 200 && !response.body()!!.string().contains(Constants.MESSAGE)) {
+                    Gson().fromJson(response.body()!!.string(), RegisterResponseModel::class.java)
+                } else if (response.code() == 200 && response.body()!!.string().contains(Constants.MESSAGE)) {
+                    val registerResponseModel = RegisterResponseModel()
+                    registerResponseModel.setCode(error(response.code(), activity))
+                    registerResponseModel
+                } else {
+                    val registerResponseModel = RegisterResponseModel()
+                    registerResponseModel.setCode(error(response.code(), activity))
+                    registerResponseModel
+                }
+
+            } catch (e: Exception) {
+                e.printStackTrace()
+                val registerResponseModel = RegisterResponseModel()
+                registerResponseModel.setCode(ErrorMapCreator.getHashMap(activity)[Constants.ZERO].toString())
+                return registerResponseModel
+            }
         }
 
         fun doPostToken(loginRequestModel: LoginRequestModel, login: Boolean, activity: Activity): LoginResponseModel {
 
-            return try {
+            try {
                 val client: OkHttpClient = OkHttpClient.Builder()
                     .connectTimeout(15, TimeUnit.SECONDS)
                     .writeTimeout(60, TimeUnit.SECONDS)
@@ -45,12 +83,16 @@ class ServicePost {
 
                 val response: Response = client.newCall(requestBuilder.build()).execute()
 
-                if (response.code() == 200 && !response.body()!!.string().contains(Constants.MESSAGE)) {
-                    return Gson().fromJson(response.body()!!.string(), LoginResponseModel::class.java)
+                return if (response.code() == 200 && !response.body()!!.string().contains(Constants.MESSAGE)) {
+                    Gson().fromJson(response.body()!!.string(), LoginResponseModel::class.java)
                 } else if (response.code() == 200 && response.body()!!.string().contains(Constants.MESSAGE)) {
-                    error(response.code(), activity)
+                    val loginResponseModel = LoginResponseModel()
+                    loginResponseModel.setCode(error(response.code(), activity))
+                    loginResponseModel
                 } else {
-                    error(response.code(), activity)
+                    val loginResponseModel = LoginResponseModel()
+                    loginResponseModel.setCode(error(response.code(), activity))
+                    loginResponseModel
                 }
 
             } catch (e: Exception) {
