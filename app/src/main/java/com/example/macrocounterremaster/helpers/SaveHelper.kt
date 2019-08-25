@@ -13,11 +13,5 @@ class SaveHelper {
                 .putString(Constants.PASSWORD, password)
                 .apply()
         }
-
-        fun saveToken(token: String, activity: Activity){
-            PreferenceManager.getDefaultSharedPreferences(activity).edit()
-                .putString(Constants.TOKEN, token)
-                .apply()
-        }
     }
 }

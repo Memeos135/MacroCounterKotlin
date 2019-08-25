@@ -95,19 +95,6 @@ class LoginActivity: AppCompatActivity(), NavigationView.OnNavigationItemSelecte
         return true
     }
 
-    // if result code is empty >> success
-    // if result code is NOT empty >> fail
-    fun showMessage(result: LoginResponseModel){
-        if(result.getCode().isNotEmpty()){
-            Snackbar.make(scrollView, result.getCode(), Snackbar.LENGTH_SHORT).show()
-        }else{
-            // save token/username/password into sharedPreferences
-
-            // finish() + update navigationView UI and MainActivity UI
-            Snackbar.make(scrollView, "it works!", Snackbar.LENGTH_SHORT).show()
-        }
-    }
-
     class LoginAsyncTask(private val username: String, private val password: String, private val url: String, loginActivity: LoginActivity): AsyncTask<Void, Void, LoginResponseModel>() {
         private var weakReference: WeakReference<LoginActivity> = WeakReference(loginActivity)
         private var progressDialog: ProgressDialog? = null
@@ -150,12 +137,12 @@ class LoginActivity: AppCompatActivity(), NavigationView.OnNavigationItemSelecte
 
             if(result.getId().isNotEmpty()){
                 // save the new token for future use
-                SaveHelper.saveToken(result.getId(), loginActivity)
+                SaveHelper.saveTokenAndCredentials(result.getId(), username, password, loginActivity)
 
                 loginActivity.setResult(Constants.LOGIN_SUCCESS_CODE)
                 loginActivity.finish()
             }else{
-                loginActivity.showMessage(result)
+                Snackbar.make(loginActivity.scrollView, result.getCode(), Snackbar.LENGTH_SHORT).show()
             }
         }
     }

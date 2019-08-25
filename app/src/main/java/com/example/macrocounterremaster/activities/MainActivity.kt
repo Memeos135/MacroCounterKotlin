@@ -1,4 +1,4 @@
-package com.example.macrocounterremaster
+package com.example.macrocounterremaster.activities
 
 import android.app.Dialog
 import android.content.Intent
@@ -17,16 +17,13 @@ import androidx.appcompat.widget.Toolbar
 import android.view.Menu
 import android.widget.TextView
 import androidx.recyclerview.widget.LinearLayoutManager
-import com.example.macrocounterremaster.activities.LoginActivity
-import com.example.macrocounterremaster.activities.RegisterActivity
+import com.example.macrocounterremaster.R
 import com.example.macrocounterremaster.adapters.NotesRecyclerAdapter
 import com.example.macrocounterremaster.helpers.MonthHelper
 import com.example.macrocounterremaster.helpers.NoteDialogHelper
 import com.example.macrocounterremaster.models.NoteModel
 import com.example.macrocounterremaster.utils.Constants
 import com.google.android.material.snackbar.Snackbar
-import kotlinx.android.synthetic.main.activity_main.*
-import kotlinx.android.synthetic.main.content_login.*
 import kotlinx.android.synthetic.main.content_main.*
 import kotlinx.android.synthetic.main.goal_dialog_layout.*
 import kotlinx.android.synthetic.main.notes_dialog_layout.*
@@ -48,7 +45,9 @@ class MainActivity : AppCompatActivity(), NavigationView.OnNavigationItemSelecte
         val drawerLayout: DrawerLayout = findViewById(R.id.drawer_layout)
         val navView: NavigationView = findViewById(R.id.nav_view)
         val toggle = ActionBarDrawerToggle(
-            this, drawerLayout, toolbar, R.string.navigation_drawer_open, R.string.navigation_drawer_close
+            this, drawerLayout, toolbar,
+            R.string.navigation_drawer_open,
+            R.string.navigation_drawer_close
         )
         drawerLayout.addDrawerListener(toggle)
         toggle.syncState()
@@ -116,7 +115,9 @@ class MainActivity : AppCompatActivity(), NavigationView.OnNavigationItemSelecte
     }
 
     private fun goalDisplay(view: TextView){
-        val dialog = NoteDialogHelper.showInputDialog(this, R.layout.goal_dialog_layout)
+        val dialog = NoteDialogHelper.showInputDialog(this,
+            R.layout.goal_dialog_layout
+        )
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
             dialog.create()
         }
@@ -126,7 +127,9 @@ class MainActivity : AppCompatActivity(), NavigationView.OnNavigationItemSelecte
     }
 
     private fun showNoteInputDialog(){
-        val dialog = NoteDialogHelper.showInputDialog(this, R.layout.notes_dialog_layout)
+        val dialog = NoteDialogHelper.showInputDialog(this,
+            R.layout.notes_dialog_layout
+        )
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
             dialog.create()
         }
