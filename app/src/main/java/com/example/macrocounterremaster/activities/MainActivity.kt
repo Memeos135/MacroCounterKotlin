@@ -91,9 +91,11 @@ class MainActivity : AppCompatActivity(), NavigationView.OnNavigationItemSelecte
         var name = ""
         var email = ""
 
-        if(data!!.getStringExtra(Constants.NAME) != null && data.getStringExtra(Constants.EMAIL) != null) {
-            name = data.getStringExtra(Constants.NAME)
-            email = data.getStringExtra(Constants.EMAIL)
+        if(data != null) {
+            if (data!!.getStringExtra(Constants.NAME) != null && data.getStringExtra(Constants.EMAIL) != null) {
+                name = data.getStringExtra(Constants.NAME)
+                email = data.getStringExtra(Constants.EMAIL)
+            }
         }
 
         if(resultCode == Constants.REGISTER_SUCCESS_CODE){
