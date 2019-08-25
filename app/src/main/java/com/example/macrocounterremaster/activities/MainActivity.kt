@@ -8,6 +8,7 @@ import android.os.Handler
 import android.preference.PreferenceManager
 import android.text.Editable
 import android.text.TextWatcher
+import android.util.Log
 import com.google.android.material.floatingactionbutton.FloatingActionButton
 import androidx.core.view.GravityCompat
 import androidx.appcompat.app.ActionBarDrawerToggle
@@ -23,6 +24,7 @@ import com.example.macrocounterremaster.R
 import com.example.macrocounterremaster.adapters.NotesRecyclerAdapter
 import com.example.macrocounterremaster.helpers.MonthHelper
 import com.example.macrocounterremaster.helpers.NoteDialogHelper
+import com.example.macrocounterremaster.helpers.SaveHelper
 import com.example.macrocounterremaster.models.NoteModel
 import com.example.macrocounterremaster.utils.Constants
 import com.google.android.material.snackbar.Snackbar
@@ -65,8 +67,11 @@ class MainActivity : AppCompatActivity(), NavigationView.OnNavigationItemSelecte
         val r = Runnable {
             val name = PreferenceManager.getDefaultSharedPreferences(this).getString(Constants.NAME, "")
             val email = PreferenceManager.getDefaultSharedPreferences(this).getString(Constants.EMAIL, "")
+            val autoLogin = PreferenceManager.getDefaultSharedPreferences(this).getString(Constants.AUTO_LOGIN, "")
 
-            updateUI(name, email)
+            if(autoLogin!!.isNotEmpty()) {
+                updateUI(name, email)
+            }
         }
         Handler().postDelayed(r, 500)
     }
@@ -83,12 +88,20 @@ class MainActivity : AppCompatActivity(), NavigationView.OnNavigationItemSelecte
     }
 
     override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?) {
+        var name = ""
+        var email = ""
+
+        if(data!!.getStringExtra(Constants.NAME) != null && data.getStringExtra(Constants.EMAIL) != null) {
+            name = data.getStringExtra(Constants.NAME)
+            email = data.getStringExtra(Constants.EMAIL)
+        }
+
         if(resultCode == Constants.REGISTER_SUCCESS_CODE){
             // register success > update UI
-            updateUI(data!!.getStringExtra(Constants.NAME), data.getStringExtra(Constants.EMAIL))
+            updateUI(name, email)
         }else if(resultCode == Constants.LOGIN_SUCCESS_CODE){
             // login success > update UI
-            updateUI(data!!.getStringExtra(Constants.NAME), data.getStringExtra(Constants.EMAIL))
+            updateUI(name, email)
         }
     }
 
@@ -131,6 +144,8 @@ class MainActivity : AppCompatActivity(), NavigationView.OnNavigationItemSelecte
 
                 user_name.text = getString(R.string.nav_header_title)
                 user_email.text = getString(R.string.nav_header_subtitle)
+
+                SaveHelper.removeAutoLogin(this)
             }
         }
         val drawerLayout: DrawerLayout = findViewById(R.id.drawer_layout)

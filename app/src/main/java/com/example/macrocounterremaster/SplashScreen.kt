@@ -38,7 +38,8 @@ class SplashScreen: AppCompatActivity() {
     fun checkIfUserExists() {
         // check if token exists (user previously logged in)
         val token = PreferenceManager.getDefaultSharedPreferences(this).getString(Constants.TOKEN, "")
-        if (token!!.isEmpty()) {
+        val autoLogin = PreferenceManager.getDefaultSharedPreferences(this).getString(Constants.AUTO_LOGIN, "")
+        if (token!!.isEmpty() && autoLogin!!.isNotEmpty()) {
             startActivity(Intent(this, MainActivity::class.java))
             startActivity(Intent(this, LoginActivity::class.java))
         } else {

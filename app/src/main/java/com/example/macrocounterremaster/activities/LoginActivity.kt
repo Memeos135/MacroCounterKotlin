@@ -98,6 +98,8 @@ class LoginActivity: AppCompatActivity(), NavigationView.OnNavigationItemSelecte
 
                 user_name.text = getString(R.string.nav_header_title)
                 user_email.text = getString(R.string.nav_header_subtitle)
+
+                SaveHelper.removeAutoLogin(this)
             }
         }
         val drawerLayout: DrawerLayout = findViewById(R.id.drawer_layout)

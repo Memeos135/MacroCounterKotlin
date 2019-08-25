@@ -12,6 +12,7 @@ class SaveHelper {
                 .putString(Constants.EMAIL, email)
                 .putString(Constants.PASSWORD, password)
                 .putString(Constants.NAME, name)
+                .putString(Constants.AUTO_LOGIN, Constants.AUTO_LOGIN)
                 .apply()
         }
 
@@ -20,6 +21,13 @@ class SaveHelper {
                 .putString(Constants.TOKEN, token)
                 .putString(Constants.EMAIL, email)
                 .putString(Constants.PASSWORD, password)
+                .putString(Constants.AUTO_LOGIN, Constants.AUTO_LOGIN)
+                .apply()
+        }
+
+        fun removeAutoLogin(activity: Activity){
+            PreferenceManager.getDefaultSharedPreferences(activity).edit()
+                .putString(Constants.AUTO_LOGIN, "")
                 .apply()
         }
     }

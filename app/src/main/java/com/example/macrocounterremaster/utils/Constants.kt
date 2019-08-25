@@ -16,5 +16,6 @@ class Constants {
         const val FLAG: String = "FLAG"
         const val NAME: String = "NAME"
         const val UPDATE_UI_FAILED: String = "Update UI Failed"
+        const val AUTO_LOGIN: String = "AUTO LOGIN"
     }
 }
