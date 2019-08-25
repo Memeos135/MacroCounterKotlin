@@ -15,6 +15,8 @@ import androidx.drawerlayout.widget.DrawerLayout
 import com.example.macrocounterremaster.R
 import com.example.macrocounterremaster.helpers.EmailHelper
 import com.example.macrocounterremaster.helpers.ProgressDialogHelper
+import com.example.macrocounterremaster.helpers.SaveHelper
+import com.example.macrocounterremaster.utils.Constants
 import com.example.macrocounterremaster.webServices.ServicePost
 import com.example.macrocounterremaster.webServices.requests.LoginRequestModel
 import com.example.macrocounterremaster.webServices.responses.LoginResponseModel
@@ -136,16 +138,24 @@ class LoginActivity: AppCompatActivity(), NavigationView.OnNavigationItemSelecte
         }
 
         // cancel dialog and check result
-        override fun onPostExecute(result: LoginResponseModel?) {
+        override fun onPostExecute(result: LoginResponseModel) {
             super.onPostExecute(result)
             val loginActivity: LoginActivity = weakReference.get()!!
 
             if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.JELLY_BEAN_MR1) {
                 if(!loginActivity.isDestroyed){
                     progressDialog!!.cancel()
-
-                    loginActivity.showMessage(result!!)
                 }
+            }
+
+            if(result.getId().isNotEmpty()){
+                // save the new token for future use
+                SaveHelper.saveToken(result.getId(), loginActivity)
+
+                loginActivity.setResult(Constants.LOGIN_SUCCESS_CODE)
+                loginActivity.finish()
+            }else{
+                loginActivity.showMessage(result)
             }
         }
     }

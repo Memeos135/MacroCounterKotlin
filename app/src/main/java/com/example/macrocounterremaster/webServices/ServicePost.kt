@@ -95,7 +95,9 @@ class ServicePost {
                 val result = response.body()!!.string()
 
                 return if (response.code() == 200 && !result.contains(Constants.MESSAGE)) {
-                    Gson().fromJson(response.body()!!.string(), LoginResponseModel::class.java)
+                    val loginResponseModel = LoginResponseModel()
+                    loginResponseModel.setId(result)
+                    loginResponseModel
 
                 } else if (response.code() == 200 && result.contains(Constants.MESSAGE)) {
                     val loginResponseModel = LoginResponseModel()

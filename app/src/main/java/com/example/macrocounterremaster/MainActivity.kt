@@ -25,6 +25,7 @@ import com.example.macrocounterremaster.helpers.NoteDialogHelper
 import com.example.macrocounterremaster.models.NoteModel
 import com.example.macrocounterremaster.utils.Constants
 import com.google.android.material.snackbar.Snackbar
+import kotlinx.android.synthetic.main.activity_main.*
 import kotlinx.android.synthetic.main.content_login.*
 import kotlinx.android.synthetic.main.content_main.*
 import kotlinx.android.synthetic.main.goal_dialog_layout.*
