@@ -37,12 +37,21 @@ class ServicePost {
 
                 val response: Response = client.newCall(requestBuilder.build()).execute()
 
-                return if (response.code() == 200 && !response.body()!!.string().contains(Constants.MESSAGE)) {
-                    Gson().fromJson(response.body()!!.string(), RegisterResponseModel::class.java)
-                } else if (response.code() == 200 && response.body()!!.string().contains(Constants.MESSAGE)) {
+                val result = response.body()!!.string()
+
+                return if (response.code() == 200 && !result.contains(Constants.MESSAGE)) {
+                    // if registration is successful > return token
+                    val registerResponseModel = RegisterResponseModel()
+                    registerResponseModel.setId(result)
+                    registerResponseModel
+
+                    // if registration is not successful > return error code
+                } else if (response.code() == 200 && result.contains(Constants.MESSAGE)) {
                     val registerResponseModel = RegisterResponseModel()
                     registerResponseModel.setCode(error(response.code(), activity))
                     registerResponseModel
+
+                    // if registration is not successful due to network issues > return default error code
                 } else {
                     val registerResponseModel = RegisterResponseModel()
                     registerResponseModel.setCode(error(response.code(), activity))
@@ -83,12 +92,16 @@ class ServicePost {
 
                 val response: Response = client.newCall(requestBuilder.build()).execute()
 
-                return if (response.code() == 200 && !response.body()!!.string().contains(Constants.MESSAGE)) {
+                val result = response.body()!!.string()
+
+                return if (response.code() == 200 && !result.contains(Constants.MESSAGE)) {
                     Gson().fromJson(response.body()!!.string(), LoginResponseModel::class.java)
-                } else if (response.code() == 200 && response.body()!!.string().contains(Constants.MESSAGE)) {
+
+                } else if (response.code() == 200 && result.contains(Constants.MESSAGE)) {
                     val loginResponseModel = LoginResponseModel()
                     loginResponseModel.setCode(error(response.code(), activity))
                     loginResponseModel
+
                 } else {
                     val loginResponseModel = LoginResponseModel()
                     loginResponseModel.setCode(error(response.code(), activity))

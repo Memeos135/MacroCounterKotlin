@@ -24,4 +24,16 @@ class LoginRequestModel() {
     fun getAccessToken(): String{
         return this.accessToken
     }
+
+    fun setEmail(email: String){
+        this.username = email
+    }
+
+    fun setPasword(password: String){
+        this.password = password
+    }
+
+    fun setUrl(url: String){
+        this. url = url
+    }
 }

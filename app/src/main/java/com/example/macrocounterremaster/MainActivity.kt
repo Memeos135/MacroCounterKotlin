@@ -23,6 +23,9 @@ import com.example.macrocounterremaster.adapters.NotesRecyclerAdapter
 import com.example.macrocounterremaster.helpers.MonthHelper
 import com.example.macrocounterremaster.helpers.NoteDialogHelper
 import com.example.macrocounterremaster.models.NoteModel
+import com.example.macrocounterremaster.utils.Constants
+import com.google.android.material.snackbar.Snackbar
+import kotlinx.android.synthetic.main.content_login.*
 import kotlinx.android.synthetic.main.content_main.*
 import kotlinx.android.synthetic.main.goal_dialog_layout.*
 import kotlinx.android.synthetic.main.notes_dialog_layout.*
@@ -55,6 +58,16 @@ class MainActivity : AppCompatActivity(), NavigationView.OnNavigationItemSelecte
         setupEmptyRecycler()
     }
 
+    override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?) {
+        if(resultCode == Constants.REGISTER_SUCCESS_CODE){
+            // register success > update UI
+            Snackbar.make(nsv_main, "Update UI - REGISTER", Snackbar.LENGTH_SHORT).show()
+        }else if(resultCode == Constants.LOGIN_SUCCESS_CODE){
+            // login success > update UI
+            Snackbar.make(nsv_main, "Update UI - LOGIN", Snackbar.LENGTH_SHORT).show()
+        }
+    }
+
     private fun setupEmptyRecycler(){
         val noteList: ArrayList<NoteModel> = ArrayList()
         rv_notes.layoutManager = LinearLayoutManager(this)
@@ -83,10 +96,10 @@ class MainActivity : AppCompatActivity(), NavigationView.OnNavigationItemSelecte
                 onBackPressed()
             }
             R.id.nav_register -> {
-                startActivity(Intent(this@MainActivity, RegisterActivity::class.java))
+                startActivityForResult(Intent(this@MainActivity, RegisterActivity::class.java), Constants.REGISTER_CODE)
             }
             R.id.nav_login -> {
-                startActivity(Intent(this@MainActivity, LoginActivity::class.java))
+                startActivityForResult(Intent(this@MainActivity, LoginActivity::class.java), Constants.LOGIN_CODE)
             }
         }
         val drawerLayout: DrawerLayout = findViewById(R.id.drawer_layout)
