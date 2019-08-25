@@ -6,8 +6,8 @@ import android.view.animation.Animation
 import android.view.animation.AnimationUtils.loadAnimation
 import kotlinx.android.synthetic.main.splash_screen.*
 import android.content.Intent
-import com.example.macrocounterremaster.activities.LoginActivity
 import android.preference.PreferenceManager
+import com.example.macrocounterremaster.activities.LoginActivity
 import com.example.macrocounterremaster.activities.MainActivity
 import com.example.macrocounterremaster.utils.Constants
 
@@ -42,7 +42,7 @@ class SplashScreen: AppCompatActivity() {
             startActivity(Intent(this, MainActivity::class.java))
             startActivity(Intent(this, LoginActivity::class.java))
         } else {
-            startActivity(Intent(this, MainActivity::class.java))
+            startActivity(Intent(this, MainActivity::class.java).putExtra(Constants.FLAG, Constants.FLAG))
         }
     }
 }

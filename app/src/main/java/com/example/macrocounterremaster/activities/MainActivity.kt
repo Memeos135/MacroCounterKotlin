@@ -4,6 +4,8 @@ import android.app.Dialog
 import android.content.Intent
 import android.os.Build
 import android.os.Bundle
+import android.os.Handler
+import android.preference.PreferenceManager
 import android.text.Editable
 import android.text.TextWatcher
 import com.google.android.material.floatingactionbutton.FloatingActionButton
@@ -24,8 +26,10 @@ import com.example.macrocounterremaster.helpers.NoteDialogHelper
 import com.example.macrocounterremaster.models.NoteModel
 import com.example.macrocounterremaster.utils.Constants
 import com.google.android.material.snackbar.Snackbar
+import kotlinx.android.synthetic.main.activity_main.*
 import kotlinx.android.synthetic.main.content_main.*
 import kotlinx.android.synthetic.main.goal_dialog_layout.*
+import kotlinx.android.synthetic.main.nav_header_main.*
 import kotlinx.android.synthetic.main.notes_dialog_layout.*
 import java.util.*
 import kotlin.collections.ArrayList
@@ -56,15 +60,35 @@ class MainActivity : AppCompatActivity(), NavigationView.OnNavigationItemSelecte
 
         setupTitleListeners()
         setupEmptyRecycler()
+
+        // wait 2 seconds before setting navigation header views, because it will result in view = null (not attached yet)
+        val r = Runnable {
+            val name = PreferenceManager.getDefaultSharedPreferences(this).getString(Constants.NAME, "")
+            val email = PreferenceManager.getDefaultSharedPreferences(this).getString(Constants.EMAIL, "")
+
+            updateUI(name, email)
+        }
+        Handler().postDelayed(r, 500)
+    }
+
+    private fun updateUI(name: String?, email: String?){
+        if(name!!.isNotEmpty() && email!!.isNotEmpty()){
+            user_name.text = name
+            user_email.text = email
+            nav_view.menu.clear()
+            nav_view.inflateMenu(R.menu.activity_main_drawer_logged_in)
+        }else{
+            Snackbar.make(nsv_main, Constants.UPDATE_UI_FAILED, Snackbar.LENGTH_SHORT).show()
+        }
     }
 
     override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?) {
         if(resultCode == Constants.REGISTER_SUCCESS_CODE){
             // register success > update UI
-            Snackbar.make(nsv_main, "Update UI - REGISTER", Snackbar.LENGTH_SHORT).show()
+            updateUI(data!!.getStringExtra(Constants.NAME), data.getStringExtra(Constants.EMAIL))
         }else if(resultCode == Constants.LOGIN_SUCCESS_CODE){
             // login success > update UI
-            Snackbar.make(nsv_main, "Update UI - LOGIN", Snackbar.LENGTH_SHORT).show()
+            updateUI(data!!.getStringExtra(Constants.NAME), data.getStringExtra(Constants.EMAIL))
         }
     }
 
@@ -100,6 +124,13 @@ class MainActivity : AppCompatActivity(), NavigationView.OnNavigationItemSelecte
             }
             R.id.nav_login -> {
                 startActivityForResult(Intent(this@MainActivity, LoginActivity::class.java), Constants.LOGIN_CODE)
+            }
+            R.id.logout -> {
+                nav_view.menu.clear()
+                nav_view.inflateMenu(R.menu.activity_main_drawer)
+
+                user_name.text = getString(R.string.nav_header_title)
+                user_email.text = getString(R.string.nav_header_subtitle)
             }
         }
         val drawerLayout: DrawerLayout = findViewById(R.id.drawer_layout)

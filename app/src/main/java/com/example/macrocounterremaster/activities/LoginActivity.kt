@@ -5,6 +5,7 @@ import android.content.Intent
 import android.os.AsyncTask
 import android.os.Build
 import android.os.Bundle
+import android.preference.PreferenceManager
 import android.view.Menu
 import android.view.MenuItem
 import androidx.appcompat.app.ActionBarDrawerToggle
@@ -22,7 +23,9 @@ import com.example.macrocounterremaster.webServices.requests.LoginRequestModel
 import com.example.macrocounterremaster.webServices.responses.LoginResponseModel
 import com.google.android.material.navigation.NavigationView
 import com.google.android.material.snackbar.Snackbar
+import kotlinx.android.synthetic.main.activity_login.*
 import kotlinx.android.synthetic.main.content_login.*
+import kotlinx.android.synthetic.main.nav_header_main.*
 import java.lang.ref.WeakReference
 
 class LoginActivity: AppCompatActivity(), NavigationView.OnNavigationItemSelectedListener {
@@ -89,6 +92,13 @@ class LoginActivity: AppCompatActivity(), NavigationView.OnNavigationItemSelecte
             R.id.nav_login -> {
                 onBackPressed()
             }
+            R.id.logout -> {
+                nav_view.menu.clear()
+                nav_view.inflateMenu(R.menu.activity_main_drawer)
+
+                user_name.text = getString(R.string.nav_header_title)
+                user_email.text = getString(R.string.nav_header_subtitle)
+            }
         }
         val drawerLayout: DrawerLayout = findViewById(R.id.drawer_layout)
         drawerLayout.closeDrawer(GravityCompat.START)
@@ -137,9 +147,15 @@ class LoginActivity: AppCompatActivity(), NavigationView.OnNavigationItemSelecte
 
             if(result.getId().isNotEmpty()){
                 // save the new token for future use
-                SaveHelper.saveTokenAndCredentials(result.getId(), username, password, loginActivity)
+                SaveHelper.saveTokenAndCredentialsLogin(result.getId(), username, password, loginActivity)
 
-                loginActivity.setResult(Constants.LOGIN_SUCCESS_CODE)
+                // get NAME from preferences (saved when user registers)
+                val name = PreferenceManager.getDefaultSharedPreferences(loginActivity).getString(Constants.NAME, "")
+                val intent = Intent()
+                intent.putExtra(Constants.NAME, name)
+                intent.putExtra(Constants.EMAIL, username)
+
+                loginActivity.setResult(Constants.LOGIN_SUCCESS_CODE, intent)
                 loginActivity.finish()
             }else{
                 Snackbar.make(loginActivity.scrollView, result.getCode(), Snackbar.LENGTH_SHORT).show()

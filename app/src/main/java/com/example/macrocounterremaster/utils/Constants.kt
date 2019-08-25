@@ -13,5 +13,8 @@ class Constants {
         const val REGISTER_SUCCESS_CODE: Int = 666
         const val LOGIN_CODE : Int = 777
         const val LOGIN_SUCCESS_CODE : Int = 888
+        const val FLAG: String = "FLAG"
+        const val NAME: String = "NAME"
+        const val UPDATE_UI_FAILED: String = "Update UI Failed"
     }
 }

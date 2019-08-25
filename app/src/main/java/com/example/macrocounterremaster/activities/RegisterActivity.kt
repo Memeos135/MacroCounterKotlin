@@ -25,7 +25,9 @@ import com.example.macrocounterremaster.webServices.requests.RegisterRequestMode
 import com.example.macrocounterremaster.webServices.responses.RegisterResponseModel
 import com.google.android.material.navigation.NavigationView
 import com.google.android.material.snackbar.Snackbar
+import kotlinx.android.synthetic.main.activity_register.*
 import kotlinx.android.synthetic.main.content_register.*
+import kotlinx.android.synthetic.main.nav_header_main.*
 import java.lang.ref.WeakReference
 
 class RegisterActivity: AppCompatActivity(), NavigationView.OnNavigationItemSelectedListener, LoginFragmentOne.NextStage, LoginFragmentTwo.StageTwoInterface {
@@ -106,6 +108,13 @@ class RegisterActivity: AppCompatActivity(), NavigationView.OnNavigationItemSele
                 startActivity(Intent(this@RegisterActivity, LoginActivity::class.java))
                 finish()
             }
+            R.id.logout -> {
+                nav_view.menu.clear()
+                nav_view.inflateMenu(R.menu.activity_main_drawer)
+
+                user_name.text = getString(R.string.nav_header_title)
+                user_email.text = getString(R.string.nav_header_subtitle)
+            }
         }
         val drawerLayout: DrawerLayout = findViewById(R.id.drawer_layout)
         drawerLayout.closeDrawer(GravityCompat.START)
@@ -151,9 +160,13 @@ class RegisterActivity: AppCompatActivity(), NavigationView.OnNavigationItemSele
 
             if(result.getId().isNotEmpty()){
                 // registration is successful > save user credentials for auto login
-                SaveHelper.saveTokenAndCredentials(result.getId(), fullValues.email, fullValues.password, registerActivity)
+                SaveHelper.saveTokenAndCredentialsRegister(result.getId(), fullValues.email, fullValues.password, fullValues.name, registerActivity)
 
-                registerActivity.setResult(Constants.REGISTER_SUCCESS_CODE)
+                val intent = Intent()
+                intent.putExtra(Constants.NAME, fullValues.name)
+                intent.putExtra(Constants.EMAIL, fullValues.email)
+
+                registerActivity.setResult(Constants.REGISTER_SUCCESS_CODE, intent)
                 registerActivity.finish()
             }else {
                 // registration failed

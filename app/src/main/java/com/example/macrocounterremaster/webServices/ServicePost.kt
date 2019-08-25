@@ -8,7 +8,6 @@ import com.example.macrocounterremaster.webServices.requests.LoginRequestModel
 import com.example.macrocounterremaster.webServices.requests.RegisterRequestModel
 import com.example.macrocounterremaster.webServices.responses.LoginResponseModel
 import com.example.macrocounterremaster.webServices.responses.RegisterResponseModel
-import com.google.gson.Gson
 import okhttp3.*
 import java.lang.Exception
 import java.util.concurrent.TimeUnit
