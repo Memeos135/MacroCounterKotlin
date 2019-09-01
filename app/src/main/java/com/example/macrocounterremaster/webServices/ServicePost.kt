@@ -8,6 +8,7 @@ import com.example.macrocounterremaster.webServices.requests.LoginRequestModel
 import com.example.macrocounterremaster.webServices.requests.RegisterRequestModel
 import com.example.macrocounterremaster.webServices.responses.LoginResponseModel
 import com.example.macrocounterremaster.webServices.responses.RegisterResponseModel
+import com.google.gson.Gson
 import okhttp3.*
 import java.lang.Exception
 import java.util.concurrent.TimeUnit
@@ -40,28 +41,22 @@ class ServicePost {
 
                 return if (response.code() == 200 && !result.contains(Constants.MESSAGE)) {
                     // if registration is successful > return token
-                    val registerResponseModel = RegisterResponseModel()
-                    registerResponseModel.setId(result)
-                    registerResponseModel
+                    Gson().fromJson(result, RegisterResponseModel::class.java)
 
                     // if registration is not successful > return error code
                 } else if (response.code() == 200 && result.contains(Constants.MESSAGE)) {
-                    val registerResponseModel = RegisterResponseModel()
-                    registerResponseModel.setCode(error(response.code(), activity))
+                    val registerResponseModel = RegisterResponseModel(null, error(response.code(), activity), null, null, null, null, null, null, null)
                     registerResponseModel
 
                     // if registration is not successful due to network issues > return default error code
                 } else {
-                    val registerResponseModel = RegisterResponseModel()
-                    registerResponseModel.setCode(error(response.code(), activity))
+                    val registerResponseModel = RegisterResponseModel(null, error(response.code(), activity), null, null, null, null, null, null, null)
                     registerResponseModel
                 }
 
             } catch (e: Exception) {
                 e.printStackTrace()
-                val registerResponseModel = RegisterResponseModel()
-                registerResponseModel.setCode(ErrorMapCreator.getHashMap(activity)[Constants.ZERO].toString())
-                return registerResponseModel
+                return RegisterResponseModel(null, ErrorMapCreator.getHashMap(activity)[Constants.ZERO].toString(), null, null, null, null, null, null, null)
             }
         }
 
@@ -90,30 +85,23 @@ class ServicePost {
                 }
 
                 val response: Response = client.newCall(requestBuilder.build()).execute()
-
                 val result = response.body()!!.string()
 
                 return if (response.code() == 200 && !result.contains(Constants.MESSAGE)) {
-                    val loginResponseModel = LoginResponseModel()
-                    loginResponseModel.setId(result)
-                    loginResponseModel
+                    Gson().fromJson(result, LoginResponseModel::class.java)
 
                 } else if (response.code() == 200 && result.contains(Constants.MESSAGE)) {
-                    val loginResponseModel = LoginResponseModel()
-                    loginResponseModel.setCode(error(response.code(), activity))
+                    val loginResponseModel = LoginResponseModel(null, error(response.code(), activity), null, null, null, null, null, null, null)
                     loginResponseModel
 
                 } else {
-                    val loginResponseModel = LoginResponseModel()
-                    loginResponseModel.setCode(error(response.code(), activity))
+                    val loginResponseModel = LoginResponseModel(null, error(response.code(), activity), null, null, null, null, null, null, null)
                     loginResponseModel
                 }
 
             } catch (e: Exception) {
                 e.printStackTrace()
-                val loginResponseModel = LoginResponseModel()
-                loginResponseModel.setCode(ErrorMapCreator.getHashMap(activity)[Constants.ZERO].toString())
-                return loginResponseModel
+                return LoginResponseModel(null, ErrorMapCreator.getHashMap(activity)[Constants.ZERO].toString(), null, null, null, null, null, null, null)
             }
         }
     }

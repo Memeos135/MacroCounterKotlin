@@ -8,7 +8,6 @@ import android.os.Handler
 import android.preference.PreferenceManager
 import android.text.Editable
 import android.text.TextWatcher
-import android.util.Log
 import com.google.android.material.floatingactionbutton.FloatingActionButton
 import androidx.core.view.GravityCompat
 import androidx.appcompat.app.ActionBarDrawerToggle
@@ -65,18 +64,18 @@ class MainActivity : AppCompatActivity(), NavigationView.OnNavigationItemSelecte
 
         // wait 2 seconds before setting navigation header views, because it will result in view = null (not attached yet)
         val r = Runnable {
-            val name = PreferenceManager.getDefaultSharedPreferences(this).getString(Constants.NAME, "")
-            val email = PreferenceManager.getDefaultSharedPreferences(this).getString(Constants.EMAIL, "")
             val autoLogin = PreferenceManager.getDefaultSharedPreferences(this).getString(Constants.AUTO_LOGIN, "")
 
             if(autoLogin!!.isNotEmpty()) {
-                updateUI(name, email)
+                val name = PreferenceManager.getDefaultSharedPreferences(this).getString(Constants.NAME, "")
+                val email = PreferenceManager.getDefaultSharedPreferences(this).getString(Constants.EMAIL, "")
+                updateDrawerUI(name, email)
             }
         }
         Handler().postDelayed(r, 500)
     }
 
-    private fun updateUI(name: String?, email: String?){
+    private fun updateDrawerUI(name: String?, email: String?){
         if(name!!.isNotEmpty() && email!!.isNotEmpty()){
             user_name.text = name
             user_email.text = email
@@ -87,23 +86,24 @@ class MainActivity : AppCompatActivity(), NavigationView.OnNavigationItemSelecte
         }
     }
 
+    private fun updateUI(proteinProgress: String, carbsProgress: String, fatProgress: String){
+        tv_protein_current.text = proteinProgress
+        tv_carbs_current.text = carbsProgress
+        tv_fat_current.text = fatProgress
+    }
+
     override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?) {
-        var name = ""
-        var email = ""
 
+        // first check if data is not null
         if(data != null) {
-            if (data!!.getStringExtra(Constants.NAME) != null && data.getStringExtra(Constants.EMAIL) != null) {
-                name = data.getStringExtra(Constants.NAME)
-                email = data.getStringExtra(Constants.EMAIL)
+            // use data values
+            if (data.getStringExtra(Constants.NAME) != null && data.getStringExtra(Constants.EMAIL) != null) {
+                updateDrawerUI(data.getStringExtra(Constants.NAME), data.getStringExtra(Constants.EMAIL))
+                updateUI(
+                    data.getStringExtra(Constants.PROTEIN_PROGRESS),
+                    data.getStringExtra(Constants.CARBS_PROGRESS),
+                    data.getStringExtra(Constants.FATS_PROGRESS))
             }
-        }
-
-        if(resultCode == Constants.REGISTER_SUCCESS_CODE){
-            // register success > update UI
-            updateUI(name, email)
-        }else if(resultCode == Constants.LOGIN_SUCCESS_CODE){
-            // login success > update UI
-            updateUI(name, email)
         }
     }
 
@@ -159,7 +159,6 @@ class MainActivity : AppCompatActivity(), NavigationView.OnNavigationItemSelecte
         tv_protein_title.setOnClickListener { goalDisplay(tv_protein_title) }
         tv_carbs_title.setOnClickListener { goalDisplay(tv_carbs_title) }
         tv_fat_title.setOnClickListener { goalDisplay(tv_fat_title) }
-        tv_cal_title.setOnClickListener { goalDisplay(tv_cal_title) }
     }
 
     private fun goalDisplay(view: TextView){

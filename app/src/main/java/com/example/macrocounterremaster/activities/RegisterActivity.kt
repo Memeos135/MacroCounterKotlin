@@ -147,7 +147,7 @@ class RegisterActivity: AppCompatActivity(), NavigationView.OnNavigationItemSele
                     return ServicePost.doPostRegister(RegisterRequestModel(fullValues, registerActivity.getString(R.string.signup_url)), registerActivity)
                 }
             }
-            return RegisterResponseModel()
+            return RegisterResponseModel(null, null, null, null, null, null, null, null, null)
         }
 
         override fun onPostExecute(result: RegisterResponseModel) {
@@ -160,19 +160,29 @@ class RegisterActivity: AppCompatActivity(), NavigationView.OnNavigationItemSele
                 }
             }
 
-            if(result.getId().isNotEmpty()){
+            if(result.getId() != null){
+                val id = result.getId()
                 // registration is successful > save user credentials for auto login
-                SaveHelper.saveTokenAndCredentialsRegister(result.getId(), fullValues.email, fullValues.password, fullValues.name, registerActivity)
+                SaveHelper.saveTokenAndCredentialsRegister(id.toString(), fullValues.email, fullValues.password, fullValues.name, registerActivity)
+                SaveHelper.saveGoalValues(registerActivity, result.getProteinGoal()!!, result.getCarbsGoal()!!,
+                    result.getFatsGoal()!!
+                )
 
                 val intent = Intent()
                 intent.putExtra(Constants.NAME, fullValues.name)
-                intent.putExtra(Constants.EMAIL, fullValues.email)
+                intent.putExtra(Constants.EMAIL, result.getEmail())
+                intent.putExtra(Constants.PROTEIN_GOAL, result.getProteinGoal())
+                intent.putExtra(Constants.PROTEIN_PROGRESS, result.getProteinProgress())
+                intent.putExtra(Constants.CARBS_GOAL, result.getCarbsGoal())
+                intent.putExtra(Constants.CARBS_PROGRESS, result.getCarbsProgress())
+                intent.putExtra(Constants.FATS_GOAL, result.getFatsGoal())
+                intent.putExtra(Constants.FATS_PROGRESS, result.getFatsProgress())
 
                 registerActivity.setResult(Constants.REGISTER_SUCCESS_CODE, intent)
                 registerActivity.finish()
             }else {
                 // registration failed
-                Snackbar.make(registerActivity.nsv, result.getCode(), Snackbar.LENGTH_SHORT).show()
+                Snackbar.make(registerActivity.nsv, result.getCode().toString(), Snackbar.LENGTH_SHORT).show()
             }
         }
     }

@@ -30,5 +30,13 @@ class SaveHelper {
                 .putString(Constants.AUTO_LOGIN, "")
                 .apply()
         }
+
+        fun saveGoalValues(activity: Activity, proteinGoal: String, carbsGoal: String, fatsGoal: String){
+            PreferenceManager.getDefaultSharedPreferences(activity).edit()
+                .putString(Constants.PROTEIN_GOAL, proteinGoal)
+                .putString(Constants.CARBS_GOAL, carbsGoal)
+                .putString(Constants.FATS_GOAL, fatsGoal)
+                .apply()
+        }
     }
 }

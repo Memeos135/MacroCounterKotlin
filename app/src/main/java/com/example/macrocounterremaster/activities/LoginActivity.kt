@@ -6,6 +6,7 @@ import android.os.AsyncTask
 import android.os.Build
 import android.os.Bundle
 import android.preference.PreferenceManager
+import android.util.Log
 import android.view.Menu
 import android.view.MenuItem
 import androidx.appcompat.app.ActionBarDrawerToggle
@@ -23,6 +24,7 @@ import com.example.macrocounterremaster.webServices.requests.LoginRequestModel
 import com.example.macrocounterremaster.webServices.responses.LoginResponseModel
 import com.google.android.material.navigation.NavigationView
 import com.google.android.material.snackbar.Snackbar
+import com.google.gson.Gson
 import kotlinx.android.synthetic.main.activity_login.*
 import kotlinx.android.synthetic.main.content_login.*
 import kotlinx.android.synthetic.main.nav_header_main.*
@@ -133,7 +135,7 @@ class LoginActivity: AppCompatActivity(), NavigationView.OnNavigationItemSelecte
                     return ServicePost.doPostToken(LoginRequestModel(username, password, url), false, loginActivity)
                 }
             }
-            return LoginResponseModel()
+            return LoginResponseModel(null, null, null, null, null, null, null, null, null)
         }
 
         // cancel dialog and check result
@@ -147,20 +149,31 @@ class LoginActivity: AppCompatActivity(), NavigationView.OnNavigationItemSelecte
                 }
             }
 
-            if(result.getId().isNotEmpty()){
+            if(result.getId() != null){
                 // save the new token for future use
-                SaveHelper.saveTokenAndCredentialsLogin(result.getId(), username, password, loginActivity)
+                val id = result.getId()
+
+                SaveHelper.saveTokenAndCredentialsLogin(id.toString(), username, password, loginActivity)
+                SaveHelper.saveGoalValues(loginActivity, result.getProteinGoal()!!, result.getCarbsGoal()!!,
+                    result.getFatsGoal()!!
+                )
 
                 // get NAME from preferences (saved when user registers)
                 val name = PreferenceManager.getDefaultSharedPreferences(loginActivity).getString(Constants.NAME, "")
                 val intent = Intent()
                 intent.putExtra(Constants.NAME, name)
-                intent.putExtra(Constants.EMAIL, username)
+                intent.putExtra(Constants.EMAIL, result.getEmail())
+                intent.putExtra(Constants.PROTEIN_GOAL, result.getProteinGoal())
+                intent.putExtra(Constants.PROTEIN_PROGRESS, result.getProteinProgress())
+                intent.putExtra(Constants.CARBS_GOAL, result.getCarbsGoal())
+                intent.putExtra(Constants.CARBS_PROGRESS, result.getCarbsProgress())
+                intent.putExtra(Constants.FATS_GOAL, result.getFatsGoal())
+                intent.putExtra(Constants.FATS_PROGRESS, result.getFatsProgress())
 
                 loginActivity.setResult(Constants.LOGIN_SUCCESS_CODE, intent)
                 loginActivity.finish()
             }else{
-                Snackbar.make(loginActivity.scrollView, result.getCode(), Snackbar.LENGTH_SHORT).show()
+                Snackbar.make(loginActivity.scrollView, result.getCode().toString(), Snackbar.LENGTH_SHORT).show()
             }
         }
     }

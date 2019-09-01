@@ -17,5 +17,12 @@ class Constants {
         const val NAME: String = "NAME"
         const val UPDATE_UI_FAILED: String = "Update UI Failed"
         const val AUTO_LOGIN: String = "AUTO LOGIN"
+        const val USER_DATA: String = "USER DATA"
+        const val PROTEIN_PROGRESS: String = "PROTEIN PROGRESS"
+        const val PROTEIN_GOAL: String = "PROTEIN GOAL"
+        const val CARBS_GOAL: String = "CARBS GOAL"
+        const val CARBS_PROGRESS: String = "CARBS PROGRESS"
+        const val FATS_PROGRESS: String = "FATS PROGRESS"
+        const val FATS_GOAL: String = "FATS PROGRESS"
     }
 }
