@@ -3,10 +3,8 @@ package com.example.macrocounterremaster.activities
 import android.app.ProgressDialog
 import android.content.Intent
 import android.os.AsyncTask
-import android.os.Build
 import android.os.Bundle
 import android.preference.PreferenceManager
-import android.util.Log
 import android.view.Menu
 import android.view.MenuItem
 import androidx.appcompat.app.ActionBarDrawerToggle
@@ -21,10 +19,9 @@ import com.example.macrocounterremaster.helpers.SaveHelper
 import com.example.macrocounterremaster.utils.Constants
 import com.example.macrocounterremaster.webServices.ServicePost
 import com.example.macrocounterremaster.webServices.requests.LoginRequestModel
-import com.example.macrocounterremaster.webServices.responses.LoginResponseModel
+import com.example.macrocounterremaster.webServices.responses.AuthenticationResponseModel
 import com.google.android.material.navigation.NavigationView
 import com.google.android.material.snackbar.Snackbar
-import com.google.gson.Gson
 import kotlinx.android.synthetic.main.activity_login.*
 import kotlinx.android.synthetic.main.content_login.*
 import kotlinx.android.synthetic.main.nav_header_main.*
@@ -109,7 +106,7 @@ class LoginActivity: AppCompatActivity(), NavigationView.OnNavigationItemSelecte
         return true
     }
 
-    class LoginAsyncTask(private val username: String, private val password: String, private val url: String, loginActivity: LoginActivity): AsyncTask<Void, Void, LoginResponseModel>() {
+    class LoginAsyncTask(private val username: String, private val password: String, private val url: String, loginActivity: LoginActivity): AsyncTask<Void, Void, AuthenticationResponseModel>() {
         private var weakReference: WeakReference<LoginActivity> = WeakReference(loginActivity)
         private var progressDialog: ProgressDialog? = null
 
@@ -125,17 +122,17 @@ class LoginActivity: AppCompatActivity(), NavigationView.OnNavigationItemSelecte
         }
 
         // attempt to fetch a token
-        override fun doInBackground(vararg p0: Void?): LoginResponseModel {
+        override fun doInBackground(vararg p0: Void?): AuthenticationResponseModel {
             val loginActivity: LoginActivity = weakReference.get()!!
 
             if(!loginActivity.isFinishing){
                 return ServicePost.doPostToken(LoginRequestModel(username, password, url), false, loginActivity)
             }
-            return LoginResponseModel(null, null, null, null, null, null, null, null, null)
+            return AuthenticationResponseModel(null, null, null, null, null, null, null, null, null)
         }
 
         // cancel dialog and check result
-        override fun onPostExecute(result: LoginResponseModel) {
+        override fun onPostExecute(result: AuthenticationResponseModel) {
             super.onPostExecute(result)
             val loginActivity: LoginActivity = weakReference.get()!!
 

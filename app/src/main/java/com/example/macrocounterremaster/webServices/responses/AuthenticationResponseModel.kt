@@ -1,6 +1,6 @@
 package com.example.macrocounterremaster.webServices.responses
 
-class LoginResponseModel(
+class AuthenticationResponseModel(
     private var id: String?,
     private var code: String?,
     private var email: String?,

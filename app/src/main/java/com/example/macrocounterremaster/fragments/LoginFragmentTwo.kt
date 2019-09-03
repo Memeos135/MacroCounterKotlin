@@ -8,7 +8,7 @@ import android.view.View
 import android.view.ViewGroup
 import androidx.fragment.app.Fragment
 import com.example.macrocounterremaster.R
-import com.example.macrocounterremaster.models.FullValues
+import com.example.macrocounterremaster.models.FullAuthenticationValues
 import com.example.macrocounterremaster.models.StageOneValues
 import com.example.macrocounterremaster.utils.Constants
 import com.google.android.material.snackbar.Snackbar
@@ -28,7 +28,7 @@ class LoginFragmentTwo(): Fragment() {
 
     interface StageTwoInterface{
         fun goBack()
-        fun register(fullValues: FullValues)
+        fun register(fullAuthenticationValues: FullAuthenticationValues)
     }
 
     override fun onAttach(context: Context?) {
@@ -45,7 +45,7 @@ class LoginFragmentTwo(): Fragment() {
         view.btnBack.setOnClickListener { listener.goBack() }
         view.btnNext.setOnClickListener {
             if(et_protein.text.toString().isNotEmpty() && et_carbs.text.toString().isNotEmpty() && et_fat.text.toString().isNotEmpty()){
-                listener.register(FullValues(stageOneValues.name, stageOneValues.email, stageOneValues.password, et_protein.text.toString(), et_carbs.text.toString(), et_fat.text.toString()))
+                listener.register(FullAuthenticationValues(stageOneValues.name, stageOneValues.email, stageOneValues.password, et_protein.text.toString(), et_carbs.text.toString(), et_fat.text.toString()))
             }else{
                 Snackbar.make(ll_two, getString(R.string.fill_empty_fields), Snackbar.LENGTH_SHORT).show()
             }

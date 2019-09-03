@@ -1,6 +1,10 @@
 package com.example.macrocounterremaster.models
 
-class NoteModel() {
+import android.os.Parcelable
+import kotlinx.android.parcel.Parcelize
+
+@Parcelize
+class NoteModel() : Parcelable {
     var month: String = ""
     var day: String = ""
     var description: String = ""

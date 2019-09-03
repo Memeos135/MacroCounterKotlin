@@ -24,5 +24,9 @@ class Constants {
         const val CARBS_PROGRESS: String = "CARBS PROGRESS"
         const val FATS_PROGRESS: String = "FATS PROGRESS"
         const val FATS_GOAL: String = "FATS PROGRESS"
+        const val PROTEIN: String = "PROTEIN"
+        const val CARBS: String = "CARBS"
+        const val FATS: String = "FATS"
+        const val VALUES: String = "VALUES"
     }
 }

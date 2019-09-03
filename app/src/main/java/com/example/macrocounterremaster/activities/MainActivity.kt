@@ -18,12 +18,14 @@ import androidx.appcompat.app.AppCompatActivity
 import androidx.appcompat.widget.Toolbar
 import android.view.Menu
 import android.widget.TextView
+import androidx.annotation.IntegerRes
 import androidx.recyclerview.widget.LinearLayoutManager
 import com.example.macrocounterremaster.R
 import com.example.macrocounterremaster.adapters.NotesRecyclerAdapter
 import com.example.macrocounterremaster.helpers.MonthHelper
 import com.example.macrocounterremaster.helpers.NoteDialogHelper
 import com.example.macrocounterremaster.helpers.SaveHelper
+import com.example.macrocounterremaster.models.Holder
 import com.example.macrocounterremaster.models.NoteModel
 import com.example.macrocounterremaster.utils.Constants
 import com.google.android.material.snackbar.Snackbar
@@ -62,11 +64,11 @@ class MainActivity : AppCompatActivity(), NavigationView.OnNavigationItemSelecte
         setupTitleListeners()
         setupEmptyRecycler()
 
-        // wait 2 seconds before setting navigation header views, because it will result in view = null (not attached yet)
+        // wait 500 milliseconds before setting navigation header views, because it will result in view = null (not attached yet)
         val r = Runnable {
             val autoLogin = PreferenceManager.getDefaultSharedPreferences(this).getString(Constants.AUTO_LOGIN, "")
 
-            if(autoLogin!!.isNotEmpty()) {
+            if (autoLogin!!.isNotEmpty()) {
                 val name = PreferenceManager.getDefaultSharedPreferences(this).getString(Constants.NAME, "")
                 val email = PreferenceManager.getDefaultSharedPreferences(this).getString(Constants.EMAIL, "")
                 updateDrawerUI(name, email)
@@ -90,19 +92,69 @@ class MainActivity : AppCompatActivity(), NavigationView.OnNavigationItemSelecte
         tv_protein_current.text = proteinProgress
         tv_carbs_current.text = carbsProgress
         tv_fat_current.text = fatProgress
+
+        tv_protein_remain.text = computeRemaining(proteinProgress, Constants.PROTEIN)
+        tv_carbs_remain.text = computeRemaining(carbsProgress, Constants.CARBS)
+        tv_fat_remain.text = computeRemaining(fatProgress, Constants.FATS)
+
+        computeCalories(proteinProgress, carbsProgress, fatProgress)
+    }
+
+    private fun computeCalories(proteinProgress: String, carbsProgress: String, fatProgress: String){
+        val protein = PreferenceManager.getDefaultSharedPreferences(this).getString(Constants.PROTEIN_GOAL, "")
+        val carbs = PreferenceManager.getDefaultSharedPreferences(this).getString(Constants.CARBS_GOAL, "")
+        val fats = PreferenceManager.getDefaultSharedPreferences(this).getString(Constants.FATS_GOAL, "")
+
+        val totalCalories = (Integer.parseInt(protein!!)*4) + (Integer.parseInt(carbs!!)*4) + (Integer.parseInt(fats!!)*9)
+        val currentCalories = ((Integer.parseInt(proteinProgress)*4) + (Integer.parseInt(carbsProgress)*4) + (Integer.parseInt(fatProgress)*9))
+
+        tv_cal_remain.text = (totalCalories - currentCalories).toString()
+        tv_cal_current.text = currentCalories.toString()
+    }
+
+    private fun computeRemaining(value: String, item: String): String{
+        val progress = Integer.parseInt(value)
+        when (item) {
+            Constants.PROTEIN -> {
+                val protein = PreferenceManager.getDefaultSharedPreferences(this).getString(Constants.PROTEIN_GOAL, "")
+
+                return if(protein!!.isNotEmpty()){
+                    (Integer.parseInt(protein) - progress).toString()
+                }else{
+                    "ERROR"
+                }
+            }
+            Constants.CARBS -> {
+                val carbs = PreferenceManager.getDefaultSharedPreferences(this).getString(Constants.CARBS_GOAL, "")
+
+                return if(carbs!!.isNotEmpty()){
+                    (Integer.parseInt(carbs) - progress).toString()
+                }else{
+                    "ERROR"
+                }
+            }
+            else -> {
+                val fats = PreferenceManager.getDefaultSharedPreferences(this).getString(Constants.FATS_GOAL, "")
+
+                return if(fats!!.isNotEmpty()){
+                    (Integer.parseInt(fats) - progress).toString()
+                }else{
+                    "ERROR"
+                }
+            }
+        }
     }
 
     override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?) {
-
         // first check if data is not null
         if(data != null) {
             // use data values
             if (data.getStringExtra(Constants.NAME) != null && data.getStringExtra(Constants.EMAIL) != null) {
                 updateDrawerUI(data.getStringExtra(Constants.NAME), data.getStringExtra(Constants.EMAIL))
                 updateUI(
-                    data.getStringExtra(Constants.PROTEIN_PROGRESS),
-                    data.getStringExtra(Constants.CARBS_PROGRESS),
-                    data.getStringExtra(Constants.FATS_PROGRESS))
+                    data.getStringExtra(Constants.PROTEIN_PROGRESS)!!,
+                    data.getStringExtra(Constants.CARBS_PROGRESS)!!,
+                    data.getStringExtra(Constants.FATS_PROGRESS)!!)
             }
         }
     }
@@ -141,18 +193,76 @@ class MainActivity : AppCompatActivity(), NavigationView.OnNavigationItemSelecte
                 startActivityForResult(Intent(this@MainActivity, LoginActivity::class.java), Constants.LOGIN_CODE)
             }
             R.id.logout -> {
-                nav_view.menu.clear()
-                nav_view.inflateMenu(R.menu.activity_main_drawer)
-
-                user_name.text = getString(R.string.nav_header_title)
-                user_email.text = getString(R.string.nav_header_subtitle)
-
                 SaveHelper.removeAutoLogin(this)
+                resetUI()
             }
         }
         val drawerLayout: DrawerLayout = findViewById(R.id.drawer_layout)
         drawerLayout.closeDrawer(GravityCompat.START)
         return true
+    }
+
+    private fun resetUI(){
+        nav_view.menu.clear()
+        nav_view.inflateMenu(R.menu.activity_main_drawer)
+
+        user_name.text = ""
+        user_email.text = ""
+
+        tv_protein_current.text = ""
+        tv_carbs_current.text = ""
+        tv_fat_current.text = ""
+
+        tv_protein_remain.text = ""
+        tv_carbs_remain.text = ""
+        tv_fat_remain.text = ""
+
+        tv_cal_current.text = ""
+        tv_cal_remain.text = ""
+
+        val adapter: NotesRecyclerAdapter = rv_notes.adapter as NotesRecyclerAdapter
+        adapter.getList().clear()
+        adapter.notifyDataSetChanged()
+    }
+
+    override fun onSaveInstanceState(outState: Bundle) {
+        outState.putParcelable(Constants.VALUES, Holder(
+
+            tv_protein_current.text.toString(),
+            tv_protein_remain.text.toString(),
+
+            tv_carbs_current.text.toString(),
+            tv_carbs_remain.text.toString(),
+
+            tv_fat_current.text.toString(),
+            tv_fat_remain.text.toString(),
+
+            tv_cal_current.text.toString(),
+            tv_cal_remain.text.toString(),
+            (rv_notes.adapter as NotesRecyclerAdapter).getList())
+        )
+
+        super.onSaveInstanceState(outState)
+    }
+
+    override fun onRestoreInstanceState(savedInstanceState: Bundle) {
+        super.onRestoreInstanceState(savedInstanceState)
+
+        val holder: Holder = savedInstanceState.getParcelable<Holder>(Constants.VALUES) as Holder
+
+        tv_protein_current.text = holder.getProteinCurrent()
+        tv_protein_remain.text = holder.getProteinRemain()
+
+        tv_carbs_current.text = holder.getCarbsCurrent()
+        tv_carbs_remain.text = holder.getCarbsRemain()
+
+        tv_fat_current.text = holder.getFatsCurrent()
+        tv_fat_remain.text = holder.getFatsRemain()
+
+        tv_cal_current.text = holder.getCalCurrent()
+        tv_cal_remain.text = holder.getCalRemain()
+
+        rv_notes.adapter = NotesRecyclerAdapter(holder.getList(), this)
     }
 
     private fun setupTitleListeners(){

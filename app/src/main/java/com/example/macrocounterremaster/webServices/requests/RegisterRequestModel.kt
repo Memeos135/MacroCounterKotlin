@@ -1,17 +1,17 @@
 package com.example.macrocounterremaster.webServices.requests
 
-import com.example.macrocounterremaster.models.FullValues
+import com.example.macrocounterremaster.models.FullAuthenticationValues
 
-class RegisterRequestModel(private val fullValues: FullValues, val url: String){
+class RegisterRequestModel(private val fullAuthenticationValues: FullAuthenticationValues, val url: String){
     fun getPostFormat(): String{
-        return "{ \"name\": \"${fullValues.name}\", \"email\": \"${fullValues.email}\", \"password\": \"${fullValues.password}\", \"protein\": \"${fullValues.protein}\", \"carbohydrates\": \"${fullValues.carbs}\", \"fats\": \"${fullValues.fats}\" }"
+        return "{ \"name\": \"${fullAuthenticationValues.name}\", \"email\": \"${fullAuthenticationValues.email}\", \"password\": \"${fullAuthenticationValues.password}\", \"protein\": \"${fullAuthenticationValues.protein}\", \"carbohydrates\": \"${fullAuthenticationValues.carbs}\", \"fats\": \"${fullAuthenticationValues.fats}\" }"
     }
 
     fun getEmail(): String{
-        return fullValues.email
+        return fullAuthenticationValues.email
     }
 
     fun getPassword(): String{
-        return fullValues.password
+        return fullAuthenticationValues.password
     }
 }

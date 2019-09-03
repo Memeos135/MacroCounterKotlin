@@ -3,7 +3,6 @@ package com.example.macrocounterremaster.activities
 import android.app.ProgressDialog
 import android.content.Intent
 import android.os.AsyncTask
-import android.os.Build
 import android.os.Bundle
 import android.view.Menu
 import android.view.MenuItem
@@ -17,12 +16,12 @@ import com.example.macrocounterremaster.fragments.LoginFragmentOne
 import com.example.macrocounterremaster.fragments.LoginFragmentTwo
 import com.example.macrocounterremaster.helpers.ProgressDialogHelper
 import com.example.macrocounterremaster.helpers.SaveHelper
-import com.example.macrocounterremaster.models.FullValues
+import com.example.macrocounterremaster.models.FullAuthenticationValues
 import com.example.macrocounterremaster.models.StageOneValues
 import com.example.macrocounterremaster.utils.Constants
 import com.example.macrocounterremaster.webServices.ServicePost
 import com.example.macrocounterremaster.webServices.requests.RegisterRequestModel
-import com.example.macrocounterremaster.webServices.responses.RegisterResponseModel
+import com.example.macrocounterremaster.webServices.responses.AuthenticationResponseModel
 import com.google.android.material.navigation.NavigationView
 import com.google.android.material.snackbar.Snackbar
 import kotlinx.android.synthetic.main.activity_register.*
@@ -31,8 +30,8 @@ import kotlinx.android.synthetic.main.nav_header_main.*
 import java.lang.ref.WeakReference
 
 class RegisterActivity: AppCompatActivity(), NavigationView.OnNavigationItemSelectedListener, LoginFragmentOne.NextStage, LoginFragmentTwo.StageTwoInterface {
-    override fun register(fullValues: FullValues) {
-        RegisterAsyncTask(fullValues, this).execute()
+    override fun register(fullAuthenticationValues: FullAuthenticationValues) {
+        RegisterAsyncTask(fullAuthenticationValues, this).execute()
     }
 
     // interface from LoginFragmentTwo
@@ -123,7 +122,7 @@ class RegisterActivity: AppCompatActivity(), NavigationView.OnNavigationItemSele
         return true
     }
 
-    class RegisterAsyncTask(private val fullValues: FullValues, registerActivity: RegisterActivity): AsyncTask<Void, Void, RegisterResponseModel>() {
+    class RegisterAsyncTask(private val fullAuthenticationValues: FullAuthenticationValues, registerActivity: RegisterActivity): AsyncTask<Void, Void, AuthenticationResponseModel>() {
         private var weakReference: WeakReference<RegisterActivity> = WeakReference(registerActivity)
         private var progressDialog: ProgressDialog? = null
 
@@ -137,16 +136,17 @@ class RegisterActivity: AppCompatActivity(), NavigationView.OnNavigationItemSele
             }
         }
 
-        override fun doInBackground(vararg p0: Void?): RegisterResponseModel {
+        override fun doInBackground(vararg p0: Void?): AuthenticationResponseModel
+        {
             val registerActivity: RegisterActivity = weakReference.get()!!
 
             if(!registerActivity.isFinishing){
-                return ServicePost.doPostRegister(RegisterRequestModel(fullValues, registerActivity.getString(R.string.signup_url)), registerActivity)
+                return ServicePost.doPostRegister(RegisterRequestModel(fullAuthenticationValues, registerActivity.getString(R.string.signup_url)), registerActivity)
             }
-            return RegisterResponseModel(null, null, null, null, null, null, null, null, null)
+            return AuthenticationResponseModel(null, null, null, null, null, null, null, null, null)
         }
 
-        override fun onPostExecute(result: RegisterResponseModel) {
+        override fun onPostExecute(result: AuthenticationResponseModel) {
             super.onPostExecute(result)
             val registerActivity: RegisterActivity = weakReference.get()!!
 
@@ -157,13 +157,13 @@ class RegisterActivity: AppCompatActivity(), NavigationView.OnNavigationItemSele
             if(result.getId() != null){
                 val id = result.getId()
                 // registration is successful > save user credentials for auto login
-                SaveHelper.saveTokenAndCredentialsRegister(id.toString(), fullValues.email, fullValues.password, fullValues.name, registerActivity)
+                SaveHelper.saveTokenAndCredentialsRegister(id.toString(), fullAuthenticationValues.email, fullAuthenticationValues.password, fullAuthenticationValues.name, registerActivity)
                 SaveHelper.saveGoalValues(registerActivity, result.getProteinGoal()!!, result.getCarbsGoal()!!,
                     result.getFatsGoal()!!
                 )
 
                 val intent = Intent()
-                intent.putExtra(Constants.NAME, fullValues.name)
+                intent.putExtra(Constants.NAME, fullAuthenticationValues.name)
                 intent.putExtra(Constants.EMAIL, result.getEmail())
                 intent.putExtra(Constants.PROTEIN_GOAL, result.getProteinGoal())
                 intent.putExtra(Constants.PROTEIN_PROGRESS, result.getProteinProgress())

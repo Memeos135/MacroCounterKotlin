@@ -6,8 +6,7 @@ import com.example.macrocounterremaster.utils.Constants
 import com.example.macrocounterremaster.utils.ErrorMapCreator
 import com.example.macrocounterremaster.webServices.requests.LoginRequestModel
 import com.example.macrocounterremaster.webServices.requests.RegisterRequestModel
-import com.example.macrocounterremaster.webServices.responses.LoginResponseModel
-import com.example.macrocounterremaster.webServices.responses.RegisterResponseModel
+import com.example.macrocounterremaster.webServices.responses.AuthenticationResponseModel
 import com.google.gson.Gson
 import okhttp3.*
 import java.lang.Exception
@@ -19,7 +18,7 @@ class ServicePost {
             return responseCode.toString() + " - " + ErrorMapCreator.getHashMap(activity)[responseCode.toString()]
         }
 
-        fun doPostRegister(registerRequestModel: RegisterRequestModel, activity: Activity): RegisterResponseModel{
+        fun doPostRegister(registerRequestModel: RegisterRequestModel, activity: Activity): AuthenticationResponseModel{
             try {
                 val client: OkHttpClient = OkHttpClient.Builder()
                     .connectTimeout(15, TimeUnit.SECONDS)
@@ -41,26 +40,26 @@ class ServicePost {
 
                 return if (response.code() == 200 && !result.contains(Constants.MESSAGE)) {
                     // if registration is successful > return token
-                    Gson().fromJson(result, RegisterResponseModel::class.java)
+                    Gson().fromJson(result, AuthenticationResponseModel::class.java)
 
                     // if registration is not successful > return error code
                 } else if (response.code() == 200 && result.contains(Constants.MESSAGE)) {
-                    val registerResponseModel = RegisterResponseModel(null, error(response.code(), activity), null, null, null, null, null, null, null)
+                    val registerResponseModel = AuthenticationResponseModel(null, error(response.code(), activity), null, null, null, null, null, null, null)
                     registerResponseModel
 
                     // if registration is not successful due to network issues > return default error code
                 } else {
-                    val registerResponseModel = RegisterResponseModel(null, error(response.code(), activity), null, null, null, null, null, null, null)
+                    val registerResponseModel = AuthenticationResponseModel(null, error(response.code(), activity), null, null, null, null, null, null, null)
                     registerResponseModel
                 }
 
             } catch (e: Exception) {
                 e.printStackTrace()
-                return RegisterResponseModel(null, ErrorMapCreator.getHashMap(activity)[Constants.ZERO].toString(), null, null, null, null, null, null, null)
+                return AuthenticationResponseModel(null, ErrorMapCreator.getHashMap(activity)[Constants.ZERO].toString(), null, null, null, null, null, null, null)
             }
         }
 
-        fun doPostToken(loginRequestModel: LoginRequestModel, login: Boolean, activity: Activity): LoginResponseModel {
+        fun doPostToken(loginRequestModel: LoginRequestModel, login: Boolean, activity: Activity): AuthenticationResponseModel {
 
             try {
                 val client: OkHttpClient = OkHttpClient.Builder()
@@ -88,20 +87,20 @@ class ServicePost {
                 val result = response.body()!!.string()
 
                 return if (response.code() == 200 && !result.contains(Constants.MESSAGE)) {
-                    Gson().fromJson(result, LoginResponseModel::class.java)
+                    Gson().fromJson(result, AuthenticationResponseModel::class.java)
 
                 } else if (response.code() == 200 && result.contains(Constants.MESSAGE)) {
-                    val loginResponseModel = LoginResponseModel(null, error(response.code(), activity), null, null, null, null, null, null, null)
+                    val loginResponseModel = AuthenticationResponseModel(null, error(response.code(), activity), null, null, null, null, null, null, null)
                     loginResponseModel
 
                 } else {
-                    val loginResponseModel = LoginResponseModel(null, error(response.code(), activity), null, null, null, null, null, null, null)
+                    val loginResponseModel = AuthenticationResponseModel(null, error(response.code(), activity), null, null, null, null, null, null, null)
                     loginResponseModel
                 }
 
             } catch (e: Exception) {
                 e.printStackTrace()
-                return LoginResponseModel(null, ErrorMapCreator.getHashMap(activity)[Constants.ZERO].toString(), null, null, null, null, null, null, null)
+                return AuthenticationResponseModel(null, ErrorMapCreator.getHashMap(activity)[Constants.ZERO].toString(), null, null, null, null, null, null, null)
             }
         }
     }
