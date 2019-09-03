@@ -118,11 +118,9 @@ class LoginActivity: AppCompatActivity(), NavigationView.OnNavigationItemSelecte
             super.onPreExecute()
             val loginActivity: LoginActivity = weakReference.get()!!
 
-            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.JELLY_BEAN_MR1) {
-                if(!loginActivity.isDestroyed){
-                    progressDialog = ProgressDialogHelper.getProgressDialog(loginActivity, R.string.logging)
-                    progressDialog!!.show()
-                }
+            if(!loginActivity.isFinishing){
+                progressDialog = ProgressDialogHelper.getProgressDialog(loginActivity, R.string.logging)
+                progressDialog!!.show()
             }
         }
 
@@ -130,10 +128,8 @@ class LoginActivity: AppCompatActivity(), NavigationView.OnNavigationItemSelecte
         override fun doInBackground(vararg p0: Void?): LoginResponseModel {
             val loginActivity: LoginActivity = weakReference.get()!!
 
-            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.JELLY_BEAN_MR1) {
-                if(!loginActivity.isDestroyed){
-                    return ServicePost.doPostToken(LoginRequestModel(username, password, url), false, loginActivity)
-                }
+            if(!loginActivity.isFinishing){
+                return ServicePost.doPostToken(LoginRequestModel(username, password, url), false, loginActivity)
             }
             return LoginResponseModel(null, null, null, null, null, null, null, null, null)
         }
@@ -143,10 +139,8 @@ class LoginActivity: AppCompatActivity(), NavigationView.OnNavigationItemSelecte
             super.onPostExecute(result)
             val loginActivity: LoginActivity = weakReference.get()!!
 
-            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.JELLY_BEAN_MR1) {
-                if(!loginActivity.isDestroyed){
-                    progressDialog!!.cancel()
-                }
+            if(!loginActivity.isFinishing){
+                progressDialog!!.cancel()
             }
 
             if(result.getId() != null){

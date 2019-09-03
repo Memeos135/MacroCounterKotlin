@@ -131,21 +131,17 @@ class RegisterActivity: AppCompatActivity(), NavigationView.OnNavigationItemSele
             super.onPreExecute()
             val registerActivity: RegisterActivity = weakReference.get()!!
 
-            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.JELLY_BEAN_MR1) {
-                if(!registerActivity.isDestroyed){
-                    progressDialog = ProgressDialogHelper.getProgressDialog(registerActivity, R.string.logging)
-                    progressDialog!!.show()
-                }
+            if(!registerActivity.isFinishing){
+                progressDialog = ProgressDialogHelper.getProgressDialog(registerActivity, R.string.logging)
+                progressDialog!!.show()
             }
         }
 
         override fun doInBackground(vararg p0: Void?): RegisterResponseModel {
             val registerActivity: RegisterActivity = weakReference.get()!!
 
-            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.JELLY_BEAN_MR1) {
-                if(!registerActivity.isDestroyed){
-                    return ServicePost.doPostRegister(RegisterRequestModel(fullValues, registerActivity.getString(R.string.signup_url)), registerActivity)
-                }
+            if(!registerActivity.isFinishing){
+                return ServicePost.doPostRegister(RegisterRequestModel(fullValues, registerActivity.getString(R.string.signup_url)), registerActivity)
             }
             return RegisterResponseModel(null, null, null, null, null, null, null, null, null)
         }
@@ -154,10 +150,8 @@ class RegisterActivity: AppCompatActivity(), NavigationView.OnNavigationItemSele
             super.onPostExecute(result)
             val registerActivity: RegisterActivity = weakReference.get()!!
 
-            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.JELLY_BEAN_MR1) {
-                if (!registerActivity.isDestroyed) {
-                    progressDialog!!.cancel()
-                }
+            if (!registerActivity.isFinishing) {
+                progressDialog!!.cancel()
             }
 
             if(result.getId() != null){
