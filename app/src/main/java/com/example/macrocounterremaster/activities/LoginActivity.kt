@@ -17,6 +17,7 @@ import com.example.macrocounterremaster.helpers.EmailHelper
 import com.example.macrocounterremaster.helpers.ProgressDialogHelper
 import com.example.macrocounterremaster.helpers.SaveHelper
 import com.example.macrocounterremaster.utils.Constants
+import com.example.macrocounterremaster.utils.ErrorMapCreator
 import com.example.macrocounterremaster.webServices.ServicePost
 import com.example.macrocounterremaster.webServices.requests.LoginRequestModel
 import com.example.macrocounterremaster.webServices.responses.AuthenticationResponseModel
@@ -128,7 +129,7 @@ class LoginActivity: AppCompatActivity(), NavigationView.OnNavigationItemSelecte
             if(!loginActivity.isFinishing){
                 return ServicePost.doPostToken(LoginRequestModel(username, password, url), false, loginActivity)
             }
-            return AuthenticationResponseModel(null, null, null, null, null, null, null, null, null)
+            return AuthenticationResponseModel(null, ErrorMapCreator.getHashMap(loginActivity)[Constants.ZERO].toString(), null, null, null, null, null, null, null)
         }
 
         // cancel dialog and check result

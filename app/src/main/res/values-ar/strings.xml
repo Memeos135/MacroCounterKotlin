@@ -6,6 +6,7 @@
     <string name="nav_header_subtitle">android.studio@android.com</string>
     <string name="nav_header_desc">رأس التنقل</string>
     <string name="action_settings">الإعدادات</string>
+    <string name="fetching">يتم الآن سحب البيانات</string>
 
     <string name="menu_home">الصفحة الرئيسية</string>
     <string name="menu_gallery">صالة عرض</string>

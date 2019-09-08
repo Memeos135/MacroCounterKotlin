@@ -1,7 +1,9 @@
 package com.example.macrocounterremaster.activities
 
 import android.app.Dialog
+import android.app.ProgressDialog
 import android.content.Intent
+import android.os.AsyncTask
 import android.os.Build
 import android.os.Bundle
 import android.os.Handler
@@ -18,22 +20,27 @@ import androidx.appcompat.app.AppCompatActivity
 import androidx.appcompat.widget.Toolbar
 import android.view.Menu
 import android.widget.TextView
-import androidx.annotation.IntegerRes
 import androidx.recyclerview.widget.LinearLayoutManager
 import com.example.macrocounterremaster.R
 import com.example.macrocounterremaster.adapters.NotesRecyclerAdapter
 import com.example.macrocounterremaster.helpers.MonthHelper
 import com.example.macrocounterremaster.helpers.NoteDialogHelper
+import com.example.macrocounterremaster.helpers.ProgressDialogHelper
 import com.example.macrocounterremaster.helpers.SaveHelper
 import com.example.macrocounterremaster.models.Holder
 import com.example.macrocounterremaster.models.NoteModel
 import com.example.macrocounterremaster.utils.Constants
+import com.example.macrocounterremaster.utils.ErrorMapCreator
+import com.example.macrocounterremaster.webServices.ServicePost
+import com.example.macrocounterremaster.webServices.requests.FetchDailyRequestModel
+import com.example.macrocounterremaster.webServices.responses.FetchDailyProgressResponse
 import com.google.android.material.snackbar.Snackbar
 import kotlinx.android.synthetic.main.activity_main.*
 import kotlinx.android.synthetic.main.content_main.*
 import kotlinx.android.synthetic.main.goal_dialog_layout.*
 import kotlinx.android.synthetic.main.nav_header_main.*
 import kotlinx.android.synthetic.main.notes_dialog_layout.*
+import java.lang.ref.WeakReference
 import java.util.*
 import kotlin.collections.ArrayList
 
@@ -64,17 +71,65 @@ class MainActivity : AppCompatActivity(), NavigationView.OnNavigationItemSelecte
         setupTitleListeners()
         setupEmptyRecycler()
 
+        val autoLogin = PreferenceManager.getDefaultSharedPreferences(this).getString(Constants.AUTO_LOGIN, "")
+        val email = PreferenceManager.getDefaultSharedPreferences(this).getString(Constants.EMAIL, "")
         // wait 500 milliseconds before setting navigation header views, because it will result in view = null (not attached yet)
         val r = Runnable {
-            val autoLogin = PreferenceManager.getDefaultSharedPreferences(this).getString(Constants.AUTO_LOGIN, "")
-
             if (autoLogin!!.isNotEmpty()) {
                 val name = PreferenceManager.getDefaultSharedPreferences(this).getString(Constants.NAME, "")
-                val email = PreferenceManager.getDefaultSharedPreferences(this).getString(Constants.EMAIL, "")
                 updateDrawerUI(name, email)
             }
         }
         Handler().postDelayed(r, 500)
+
+        // fetch daily progress - the app has just opened and signed in automatically
+        if(savedInstanceState == null && autoLogin!!.isNotEmpty()){
+            val password = PreferenceManager.getDefaultSharedPreferences(this).getString(Constants.PASSWORD, "")
+            val token = PreferenceManager.getDefaultSharedPreferences(this).getString(Constants.TOKEN, "")
+
+            FetchDailyProgressAsyncTask(email.toString(), password.toString(), token.toString(),this).execute()
+        }
+    }
+
+    private class FetchDailyProgressAsyncTask(private val email: String, private val password: String, private val token: String, mainActivity: MainActivity): AsyncTask<Void, Void, FetchDailyProgressResponse>() {
+        private var weakReference: WeakReference<MainActivity> = WeakReference(mainActivity)
+        private var progressDialog: ProgressDialog? = null
+
+        override fun onPreExecute() {
+            super.onPreExecute()
+            val mainActivity: MainActivity = weakReference.get()!!
+
+            if(!mainActivity.isFinishing){
+                progressDialog = ProgressDialogHelper.getProgressDialog(mainActivity, R.string.fetching)
+                progressDialog!!.show()
+            }
+        }
+
+        override fun doInBackground(vararg p0: Void?): FetchDailyProgressResponse {
+            val mainActivity: MainActivity = weakReference.get()!!
+
+            if(!mainActivity.isFinishing){
+                return ServicePost.doPostDaily(FetchDailyRequestModel(email, password, token, mainActivity), mainActivity)
+            }
+            return FetchDailyProgressResponse(null, null, null, ErrorMapCreator.getHashMap(mainActivity)[Constants.ZERO].toString())
+        }
+
+        override fun onPostExecute(fetchDailyProgressResponse: FetchDailyProgressResponse?) {
+            super.onPostExecute(fetchDailyProgressResponse)
+            val mainActivity: MainActivity = weakReference.get()!!
+
+            if(!mainActivity.isFinishing){
+                progressDialog!!.cancel()
+            }
+
+            if(fetchDailyProgressResponse!!.getError() == null){
+                Snackbar.make(mainActivity.nsv_main, "It works!", Snackbar.LENGTH_SHORT).show()
+            }else{
+                Snackbar.make(mainActivity.nsv_main, fetchDailyProgressResponse.getError().toString(), Snackbar.LENGTH_SHORT).show()
+            }
+
+        }
+
     }
 
     private fun updateDrawerUI(name: String?, email: String?){

@@ -19,6 +19,7 @@ import com.example.macrocounterremaster.helpers.SaveHelper
 import com.example.macrocounterremaster.models.FullAuthenticationValues
 import com.example.macrocounterremaster.models.StageOneValues
 import com.example.macrocounterremaster.utils.Constants
+import com.example.macrocounterremaster.utils.ErrorMapCreator
 import com.example.macrocounterremaster.webServices.ServicePost
 import com.example.macrocounterremaster.webServices.requests.RegisterRequestModel
 import com.example.macrocounterremaster.webServices.responses.AuthenticationResponseModel
@@ -143,7 +144,7 @@ class RegisterActivity: AppCompatActivity(), NavigationView.OnNavigationItemSele
             if(!registerActivity.isFinishing){
                 return ServicePost.doPostRegister(RegisterRequestModel(fullAuthenticationValues, registerActivity.getString(R.string.signup_url)), registerActivity)
             }
-            return AuthenticationResponseModel(null, null, null, null, null, null, null, null, null)
+            return AuthenticationResponseModel(null, ErrorMapCreator.getHashMap(registerActivity)[Constants.ZERO].toString(), null, null, null, null, null, null, null)
         }
 
         override fun onPostExecute(result: AuthenticationResponseModel) {

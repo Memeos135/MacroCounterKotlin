@@ -38,5 +38,11 @@ class SaveHelper {
                 .putString(Constants.FATS_GOAL, fatsGoal)
                 .apply()
         }
+
+        fun saveToken(token: String, activity: Activity){
+            PreferenceManager.getDefaultSharedPreferences(activity).edit()
+                .putString(Constants.TOKEN, token)
+                .apply()
+        }
     }
 }
