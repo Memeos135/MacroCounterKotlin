@@ -50,7 +50,7 @@ class ServicePost {
                         val id = authenticationResponseModel.getId()
                         SaveHelper.saveToken(id!!, activity)
                         // doPostDaily again
-                        doPostDaily(FetchDailyRequestModel(fetchDailyRequestModel.getEmail(), fetchDailyRequestModel.getPassword(), id, activity), activity)
+                        doPostDaily(FetchDailyRequestModel(fetchDailyRequestModel.getEmail(), fetchDailyRequestModel.getPassword(), activity), activity)
                     }else{
                         FetchDailyProgressResponse(null, null, null, authenticationResponseModel.getCode())
                     }

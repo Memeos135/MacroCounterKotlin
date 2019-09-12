@@ -12,8 +12,8 @@ import androidx.appcompat.widget.Toolbar
 import androidx.core.view.GravityCompat
 import androidx.drawerlayout.widget.DrawerLayout
 import com.example.macrocounterremaster.R
-import com.example.macrocounterremaster.fragments.LoginFragmentOne
-import com.example.macrocounterremaster.fragments.LoginFragmentTwo
+import com.example.macrocounterremaster.fragments.RegisterFragmentOne
+import com.example.macrocounterremaster.fragments.RegisterFragmentTwo
 import com.example.macrocounterremaster.helpers.ProgressDialogHelper
 import com.example.macrocounterremaster.helpers.SaveHelper
 import com.example.macrocounterremaster.models.FullAuthenticationValues
@@ -30,17 +30,17 @@ import kotlinx.android.synthetic.main.content_register.*
 import kotlinx.android.synthetic.main.nav_header_main.*
 import java.lang.ref.WeakReference
 
-class RegisterActivity: AppCompatActivity(), NavigationView.OnNavigationItemSelectedListener, LoginFragmentOne.NextStage, LoginFragmentTwo.StageTwoInterface {
+class RegisterActivity: AppCompatActivity(), NavigationView.OnNavigationItemSelectedListener, RegisterFragmentOne.NextStage, RegisterFragmentTwo.StageTwoInterface {
     override fun register(fullAuthenticationValues: FullAuthenticationValues) {
         RegisterAsyncTask(fullAuthenticationValues, this).execute()
     }
 
-    // interface from LoginFragmentTwo
+    // interface from RegisterFragmentTwo
     override fun goBack() {
         fragmentController(fragmentOne = true, fragmentTwo = false, values = null)
     }
 
-    // interface from LoginFragmentOne
+    // interface from RegisterFragmentOne
     override fun proceed(stageOneValues: StageOneValues) {
         fragmentController(fragmentOne = false, fragmentTwo = true, values = stageOneValues)
     }
@@ -49,10 +49,10 @@ class RegisterActivity: AppCompatActivity(), NavigationView.OnNavigationItemSele
         val fragmentTransaction = supportFragmentManager.beginTransaction()
 
         if(fragmentOne) {
-            fragmentTransaction.replace(R.id.ll_fragment_container, LoginFragmentOne(R.layout.fragment_stage_one))
+            fragmentTransaction.replace(R.id.ll_fragment_container, RegisterFragmentOne(R.layout.fragment_stage_one))
         }
         if(fragmentTwo){
-            fragmentTransaction.replace(R.id.ll_fragment_container, LoginFragmentTwo(R.layout.fragment_stage_two, values!!
+            fragmentTransaction.replace(R.id.ll_fragment_container, RegisterFragmentTwo(R.layout.fragment_stage_two, values!!
             ))
         }
 
@@ -76,7 +76,7 @@ class RegisterActivity: AppCompatActivity(), NavigationView.OnNavigationItemSele
         navView.setNavigationItemSelectedListener(this)
 
         if(savedInstanceState == null){
-            supportFragmentManager.beginTransaction().add(R.id.ll_fragment_container, LoginFragmentOne(R.layout.fragment_stage_one)).commit()
+            supportFragmentManager.beginTransaction().add(R.id.ll_fragment_container, RegisterFragmentOne(R.layout.fragment_stage_one)).commit()
         }
     }
 
@@ -95,6 +95,16 @@ class RegisterActivity: AppCompatActivity(), NavigationView.OnNavigationItemSele
         return true
     }
 
+    override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?) {
+        if(data != null) {
+            // use data values
+            if (data.getStringExtra(Constants.NAME) != null && data.getStringExtra(Constants.EMAIL) != null) {
+                setResult(Constants.LOGIN_SUCCESS_CODE, data)
+                finish()
+            }
+        }
+    }
+
     override fun onNavigationItemSelected(item: MenuItem): Boolean {
         // Handle navigation view item clicks here.
         when (item.itemId) {
@@ -105,8 +115,7 @@ class RegisterActivity: AppCompatActivity(), NavigationView.OnNavigationItemSele
                 onBackPressed()
             }
             R.id.nav_login -> {
-                startActivity(Intent(this@RegisterActivity, LoginActivity::class.java))
-                finish()
+                startActivityForResult(Intent(this@RegisterActivity, LoginActivity::class.java), Constants.LOGIN_CODE)
             }
             R.id.logout -> {
                 nav_view.menu.clear()
@@ -162,7 +171,6 @@ class RegisterActivity: AppCompatActivity(), NavigationView.OnNavigationItemSele
                 SaveHelper.saveGoalValues(registerActivity, result.getProteinGoal()!!, result.getCarbsGoal()!!,
                     result.getFatsGoal()!!
                 )
-
                 val intent = Intent()
                 intent.putExtra(Constants.NAME, fullAuthenticationValues.name)
                 intent.putExtra(Constants.EMAIL, result.getEmail())
@@ -172,7 +180,6 @@ class RegisterActivity: AppCompatActivity(), NavigationView.OnNavigationItemSele
                 intent.putExtra(Constants.CARBS_PROGRESS, result.getCarbsProgress())
                 intent.putExtra(Constants.FATS_GOAL, result.getFatsGoal())
                 intent.putExtra(Constants.FATS_PROGRESS, result.getFatsProgress())
-
                 registerActivity.setResult(Constants.REGISTER_SUCCESS_CODE, intent)
                 registerActivity.finish()
             }else {

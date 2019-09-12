@@ -3,9 +3,9 @@ package com.example.macrocounterremaster.webServices.requests
 import android.app.Activity
 import com.example.macrocounterremaster.R
 
-class FetchDailyRequestModel(private val email: String, private val password: String, private val token: String, private val activity: Activity) {
+class FetchDailyRequestModel(private val email: String, private val password: String, private val activity: Activity) {
     fun getPostFormat(): String{
-        return "{ \"email\": \"${email}\", \"password\": \"${password}\", \"token\": \"${token}\"}"
+        return "{ \"email\": \"${email}\", \"password\": \"${password}\"}"
     }
 
     fun getEmail(): String{
@@ -14,10 +14,6 @@ class FetchDailyRequestModel(private val email: String, private val password: St
 
     fun getPassword(): String{
         return password
-    }
-
-    fun getToken(): String{
-        return token
     }
 
     fun getURL(): String{

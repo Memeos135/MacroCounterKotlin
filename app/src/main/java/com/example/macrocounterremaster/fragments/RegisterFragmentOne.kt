@@ -15,7 +15,7 @@ import com.google.android.material.snackbar.Snackbar
 import kotlinx.android.synthetic.main.fragment_stage_one.*
 import kotlinx.android.synthetic.main.fragment_stage_one.view.*
 
-class LoginFragmentOne(): Fragment() {
+class RegisterFragmentOne(): Fragment() {
     var layout : Int = 0
     private lateinit var listener: NextStage
 

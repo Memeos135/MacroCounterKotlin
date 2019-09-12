@@ -85,13 +85,12 @@ class MainActivity : AppCompatActivity(), NavigationView.OnNavigationItemSelecte
         // fetch daily progress - the app has just opened and signed in automatically
         if(savedInstanceState == null && autoLogin!!.isNotEmpty()){
             val password = PreferenceManager.getDefaultSharedPreferences(this).getString(Constants.PASSWORD, "")
-            val token = PreferenceManager.getDefaultSharedPreferences(this).getString(Constants.TOKEN, "")
 
-            FetchDailyProgressAsyncTask(email.toString(), password.toString(), token.toString(),this).execute()
+            FetchDailyProgressAsyncTask(email.toString(), password.toString(), this).execute()
         }
     }
 
-    private class FetchDailyProgressAsyncTask(private val email: String, private val password: String, private val token: String, mainActivity: MainActivity): AsyncTask<Void, Void, FetchDailyProgressResponse>() {
+    private class FetchDailyProgressAsyncTask(private val email: String, private val password: String, mainActivity: MainActivity): AsyncTask<Void, Void, FetchDailyProgressResponse>() {
         private var weakReference: WeakReference<MainActivity> = WeakReference(mainActivity)
         private var progressDialog: ProgressDialog? = null
 
@@ -109,7 +108,7 @@ class MainActivity : AppCompatActivity(), NavigationView.OnNavigationItemSelecte
             val mainActivity: MainActivity = weakReference.get()!!
 
             if(!mainActivity.isFinishing){
-                return ServicePost.doPostDaily(FetchDailyRequestModel(email, password, token, mainActivity), mainActivity)
+                return ServicePost.doPostDaily(FetchDailyRequestModel(email, password, mainActivity), mainActivity)
             }
             return FetchDailyProgressResponse(null, null, null, ErrorMapCreator.getHashMap(mainActivity)[Constants.ZERO].toString())
         }
@@ -123,7 +122,7 @@ class MainActivity : AppCompatActivity(), NavigationView.OnNavigationItemSelecte
             }
 
             if(fetchDailyProgressResponse!!.getError() == null){
-                Snackbar.make(mainActivity.nsv_main, "It works!", Snackbar.LENGTH_SHORT).show()
+                mainActivity.updateUI(fetchDailyProgressResponse.getProteinProgress()!!, fetchDailyProgressResponse.getCarbsProgress()!!, fetchDailyProgressResponse.getFatsProgress()!!)
             }else{
                 Snackbar.make(mainActivity.nsv_main, fetchDailyProgressResponse.getError().toString(), Snackbar.LENGTH_SHORT).show()
             }

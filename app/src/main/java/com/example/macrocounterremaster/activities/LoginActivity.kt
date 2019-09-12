@@ -79,6 +79,16 @@ class LoginActivity: AppCompatActivity(), NavigationView.OnNavigationItemSelecte
         return true
     }
 
+    override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?) {
+        if(data != null) {
+            // use data values
+            if (data.getStringExtra(Constants.NAME) != null) {
+                setResult(Constants.REGISTER_SUCCESS_CODE, data)
+                finish()
+            }
+        }
+    }
+
     override fun onNavigationItemSelected(item: MenuItem): Boolean {
         // Handle navigation view item clicks here.
         when (item.itemId) {
@@ -86,8 +96,7 @@ class LoginActivity: AppCompatActivity(), NavigationView.OnNavigationItemSelecte
                 finish()
             }
             R.id.nav_register -> {
-                startActivity(Intent(this@LoginActivity, RegisterActivity::class.java))
-                finish()
+                startActivityForResult(Intent(this@LoginActivity, RegisterActivity::class.java), Constants.REGISTER_CODE)
             }
             R.id.nav_login -> {
                 onBackPressed()
@@ -152,8 +161,9 @@ class LoginActivity: AppCompatActivity(), NavigationView.OnNavigationItemSelecte
 
                 // get NAME from preferences (saved when user registers)
                 val name = PreferenceManager.getDefaultSharedPreferences(loginActivity).getString(Constants.NAME, "")
+
                 val intent = Intent()
-                intent.putExtra(Constants.NAME, name)
+                intent.putExtra(Constants.NAME, name!!)
                 intent.putExtra(Constants.EMAIL, result.getEmail())
                 intent.putExtra(Constants.PROTEIN_GOAL, result.getProteinGoal())
                 intent.putExtra(Constants.PROTEIN_PROGRESS, result.getProteinProgress())
@@ -161,7 +171,6 @@ class LoginActivity: AppCompatActivity(), NavigationView.OnNavigationItemSelecte
                 intent.putExtra(Constants.CARBS_PROGRESS, result.getCarbsProgress())
                 intent.putExtra(Constants.FATS_GOAL, result.getFatsGoal())
                 intent.putExtra(Constants.FATS_PROGRESS, result.getFatsProgress())
-
                 loginActivity.setResult(Constants.LOGIN_SUCCESS_CODE, intent)
                 loginActivity.finish()
             }else{
