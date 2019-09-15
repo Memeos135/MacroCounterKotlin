@@ -19,7 +19,6 @@ import com.google.android.material.navigation.NavigationView
 import androidx.appcompat.app.AppCompatActivity
 import androidx.appcompat.widget.Toolbar
 import android.view.Menu
-import android.widget.GridLayout
 import android.widget.TextView
 import androidx.recyclerview.widget.GridLayoutManager
 import androidx.recyclerview.widget.LinearLayoutManager
@@ -217,28 +216,7 @@ class MainActivity : AppCompatActivity(), NavigationView.OnNavigationItemSelecte
         val month = MonthHelper.getMonth(Calendar.getInstance().get(Calendar.MONTH))
         val day = Calendar.getInstance().get(Calendar.DAY_OF_MONTH)
 
-        val databaseInstance: DatabaseInstance = DatabaseInstance.getInstance(this)
-        val list: List<NoteModel> = databaseInstance.recordDao().findByDate(month, "$day")
-
-        if(list.isNotEmpty()){
-            if(!OrientationHelper.isLandscape(this)) {
-                rv_notes.layoutManager = LinearLayoutManager(this)
-            }else{
-                rv_notes.layoutManager = GridLayoutManager(this, 2)
-            }
-
-            rv_notes.adapter = NotesRecyclerAdapter(list.toMutableList(), this)
-
-        }else {
-            if(!OrientationHelper.isLandscape(this)){
-                rv_notes.layoutManager = LinearLayoutManager(this)
-            }else{
-                rv_notes.layoutManager = GridLayoutManager(this, 2)
-            }
-
-            val noteList: ArrayList<NoteModel> = ArrayList()
-            rv_notes.adapter = NotesRecyclerAdapter(noteList, this)
-        }
+        RoomAsyncTask(month, day, this).execute()
     }
 
     override fun onBackPressed() {
@@ -416,5 +394,60 @@ class MainActivity : AppCompatActivity(), NavigationView.OnNavigationItemSelecte
         // after adding note to adapter, save it to Room
         val databaseInstance: DatabaseInstance = DatabaseInstance.getInstance(this)
         databaseInstance.recordDao().insertAll(noteModel)
+    }
+
+    class RoomAsyncTask(private val month: String, private val day: Int, activity: MainActivity): AsyncTask<Void, Void, List<NoteModel>>(){
+        private var weakReference: WeakReference<MainActivity> = WeakReference(activity)
+        private var progressDialog: ProgressDialog? = null
+
+        override fun onPreExecute() {
+            super.onPreExecute()
+
+            val activity = weakReference.get()!!
+
+            if(!activity.isFinishing){
+                progressDialog = ProgressDialogHelper.getProgressDialog(activity, R.string.fetching_notes)
+                progressDialog!!.show()
+            }
+        }
+
+        override fun doInBackground(vararg p0: Void?): List<NoteModel> {
+            val activity = weakReference.get()!!
+
+            if(!activity.isFinishing) {
+                val databaseInstance: DatabaseInstance = DatabaseInstance.getInstance(activity)
+                return databaseInstance.recordDao().findByDate(month, "$day")
+            }
+            return ArrayList()
+        }
+
+        override fun onPostExecute(list: List<NoteModel>?) {
+            super.onPostExecute(list)
+            val activity = weakReference.get()!!
+
+            if(!activity.isFinishing){
+                progressDialog!!.cancel()
+
+                if(list!!.isNotEmpty()){
+                    if(!OrientationHelper.isLandscape(activity)) {
+                        activity.rv_notes.layoutManager = LinearLayoutManager(activity)
+                    }else{
+                        activity.rv_notes.layoutManager = GridLayoutManager(activity, 2)
+                    }
+
+                    activity.rv_notes.adapter = NotesRecyclerAdapter(list.toMutableList(), activity)
+
+                }else {
+                    if(!OrientationHelper.isLandscape(activity)){
+                        activity.rv_notes.layoutManager = LinearLayoutManager(activity)
+                    }else{
+                        activity.rv_notes.layoutManager = GridLayoutManager(activity, 2)
+                    }
+
+                    val noteList: ArrayList<NoteModel> = ArrayList()
+                    activity.rv_notes.adapter = NotesRecyclerAdapter(noteList, activity)
+                }
+            }
+        }
     }
 }

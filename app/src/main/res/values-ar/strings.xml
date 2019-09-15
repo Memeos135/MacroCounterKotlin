@@ -7,6 +7,7 @@
     <string name="nav_header_desc">رأس التنقل</string>
     <string name="action_settings">الإعدادات</string>
     <string name="fetching">يتم الآن سحب البيانات</string>
+    <string name="fetching_notes">يتم الآن سحب النوتات من قاعدة البيانات</string>
 
     <string name="menu_home">الصفحة الرئيسية</string>
     <string name="menu_gallery">صالة عرض</string>
