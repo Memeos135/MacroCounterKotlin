@@ -216,7 +216,7 @@ class MainActivity : AppCompatActivity(), NavigationView.OnNavigationItemSelecte
         val month = MonthHelper.getMonth(Calendar.getInstance().get(Calendar.MONTH))
         val day = Calendar.getInstance().get(Calendar.DAY_OF_MONTH)
 
-        RoomAsyncTask(month, day, this).execute()
+        RoomSetupAsyncTask(month, day, this).execute()
     }
 
     override fun onBackPressed() {
@@ -388,15 +388,54 @@ class MainActivity : AppCompatActivity(), NavigationView.OnNavigationItemSelecte
             Calendar.getInstance().get(Calendar.DAY_OF_MONTH).toString(),
             msg)
 
-        adapter.getList().add(noteModel)
-        adapter.notifyDataSetChanged()
-
-        // after adding note to adapter, save it to Room
-        val databaseInstance: DatabaseInstance = DatabaseInstance.getInstance(this)
-        databaseInstance.recordDao().insertAll(noteModel)
+        RoomAddNoteAsyncTask(noteModel, this, adapter).execute()
     }
 
-    class RoomAsyncTask(private val month: String, private val day: Int, activity: MainActivity): AsyncTask<Void, Void, List<NoteModel>>(){
+    class RoomAddNoteAsyncTask(private val noteModel: NoteModel, activity: MainActivity, private val adapter: NotesRecyclerAdapter): AsyncTask<Void, Void, Boolean>(){
+        private var weakReference: WeakReference<MainActivity> = WeakReference(activity)
+        private var progressDialog: ProgressDialog? = null
+
+        override fun onPreExecute() {
+            super.onPreExecute()
+
+            val activity = weakReference.get()!!
+
+            if(!activity.isFinishing){
+                progressDialog = ProgressDialogHelper.getProgressDialog(activity, R.string.adding_note)
+                progressDialog!!.show()
+            }
+        }
+
+        override fun doInBackground(vararg p0: Void?): Boolean {
+            val activity = weakReference.get()!!
+
+            if(!activity.isFinishing){
+                val databaseInstance: DatabaseInstance = DatabaseInstance.getInstance(activity)
+                databaseInstance.recordDao().insertAll(noteModel)
+                return true
+            }
+            return false
+        }
+
+        override fun onPostExecute(result: Boolean) {
+            super.onPostExecute(result)
+
+            val activity = weakReference.get()!!
+
+            if(!activity.isFinishing){
+                progressDialog!!.cancel()
+
+                if(result){
+                    adapter.getList().add(noteModel)
+                    adapter.notifyDataSetChanged()
+                }else{
+                    Snackbar.make(activity.nsv_main, R.string.addition_failed, Snackbar.LENGTH_SHORT).show()
+                }
+            }
+        }
+    }
+
+    class RoomSetupAsyncTask(private val month: String, private val day: Int, activity: MainActivity): AsyncTask<Void, Void, List<NoteModel>>(){
         private var weakReference: WeakReference<MainActivity> = WeakReference(activity)
         private var progressDialog: ProgressDialog? = null
 

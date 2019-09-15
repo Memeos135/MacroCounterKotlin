@@ -8,6 +8,10 @@
     <string name="action_settings">الإعدادات</string>
     <string name="fetching">يتم الآن سحب البيانات</string>
     <string name="fetching_notes">يتم الآن سحب النوتات من قاعدة البيانات</string>
+    <string name="deletion_failed">فشل في عملية الحذف</string>
+    <string name="deleting_item">يتم الآن عملية حذف النوته</string>
+    <string name="adding_note">يتم الآن إضافة النوته إلي قاعدة البيانات</string>
+    <string name="addition_failed">فشل في إضافة النوته إلي قاعدة البيانات</string>
 
     <string name="menu_home">الصفحة الرئيسية</string>
     <string name="menu_gallery">صالة عرض</string>
