@@ -208,6 +208,9 @@ class MainActivity : AppCompatActivity(), NavigationView.OnNavigationItemSelecte
                     data.getStringExtra(Constants.PROTEIN_PROGRESS)!!,
                     data.getStringExtra(Constants.CARBS_PROGRESS)!!,
                     data.getStringExtra(Constants.FATS_PROGRESS)!!)
+
+                // make sure notes are re-shown
+                setupEmptyRecycler()
             }
         }
     }
@@ -247,8 +250,7 @@ class MainActivity : AppCompatActivity(), NavigationView.OnNavigationItemSelecte
                 startActivityForResult(Intent(this@MainActivity, LoginActivity::class.java), Constants.LOGIN_CODE)
             }
             R.id.logout -> {
-                SaveHelper.removeAutoLogin(this)
-                resetUI()
+                RoomDeleteAsyncTask(this).execute()
             }
         }
         val drawerLayout: DrawerLayout = findViewById(R.id.drawer_layout)
@@ -485,6 +487,50 @@ class MainActivity : AppCompatActivity(), NavigationView.OnNavigationItemSelecte
 
                     val noteList: ArrayList<NoteModel> = ArrayList()
                     activity.rv_notes.adapter = NotesRecyclerAdapter(noteList, activity)
+                }
+            }
+        }
+    }
+
+    class RoomDeleteAsyncTask(activity: MainActivity): AsyncTask<Void, Void, Boolean>(){
+        private var weakReference: WeakReference<MainActivity> = WeakReference(activity)
+        private var progressDialog: ProgressDialog? = null
+
+        override fun onPreExecute() {
+            super.onPreExecute()
+
+            val activity = weakReference.get()!!
+
+            if(!activity.isFinishing){
+                progressDialog = ProgressDialogHelper.getProgressDialog(activity, R.string.deleting_items)
+                progressDialog!!.show()
+            }
+        }
+
+        override fun doInBackground(vararg p0: Void?): Boolean {
+            val activity = weakReference.get()!!
+
+            if(!activity.isFinishing){
+                val databaseInstance: DatabaseInstance = DatabaseInstance.getInstance(activity)
+                databaseInstance.recordDao().deleteAll()
+                return true
+            }
+            return false
+        }
+
+        override fun onPostExecute(result: Boolean) {
+            super.onPostExecute(result)
+
+            val activity = weakReference.get()!!
+
+            if(!activity.isFinishing){
+                progressDialog!!.cancel()
+
+                if(result){
+                    SaveHelper.removeAutoLogin(activity)
+                    activity.resetUI()
+                }else{
+                    Snackbar.make(activity.nsv_main, R.string.deletion_failed, Snackbar.LENGTH_SHORT).show()
                 }
             }
         }

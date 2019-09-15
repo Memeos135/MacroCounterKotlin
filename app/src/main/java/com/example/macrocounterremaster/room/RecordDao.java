@@ -29,6 +29,9 @@ public interface RecordDao {
     @Delete
     void delete(NoteModel noteModel);
 
+    @Query("DELETE FROM notes")
+    public void deleteAll();
+
     @Update(onConflict = OnConflictStrategy.REPLACE)
     void updateRecord(NoteModel noteModel);
 }

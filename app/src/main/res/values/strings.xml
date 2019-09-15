@@ -12,6 +12,7 @@
     <string name="deleting_item">Deleting note</string>
     <string name="adding_note">Adding note to database</string>
     <string name="addition_failed">Failed to add notes to database</string>
+    <string name="deleting_items">Deleting All Notes</string>
 
     <string name="menu_home">Home</string>
     <string name="menu_gallery">Gallery</string>
