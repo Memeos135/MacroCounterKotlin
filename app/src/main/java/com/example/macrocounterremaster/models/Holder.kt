@@ -13,10 +13,10 @@ class Holder(
     private var fats_goal: String?,
     private var calorie_progress: String?,
     private var calorie_goal: String?,
-    private var list: ArrayList<NoteModel>
+    private var list: MutableList<NoteModel>
 ) : Parcelable {
 
-    fun getList(): ArrayList<NoteModel>{
+    fun getList(): MutableList<NoteModel>{
         return list
     }
 

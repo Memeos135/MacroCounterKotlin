@@ -19,16 +19,16 @@ import com.google.android.material.navigation.NavigationView
 import androidx.appcompat.app.AppCompatActivity
 import androidx.appcompat.widget.Toolbar
 import android.view.Menu
+import android.widget.GridLayout
 import android.widget.TextView
+import androidx.recyclerview.widget.GridLayoutManager
 import androidx.recyclerview.widget.LinearLayoutManager
 import com.example.macrocounterremaster.R
 import com.example.macrocounterremaster.adapters.NotesRecyclerAdapter
-import com.example.macrocounterremaster.helpers.MonthHelper
-import com.example.macrocounterremaster.helpers.NoteDialogHelper
-import com.example.macrocounterremaster.helpers.ProgressDialogHelper
-import com.example.macrocounterremaster.helpers.SaveHelper
+import com.example.macrocounterremaster.helpers.*
 import com.example.macrocounterremaster.models.Holder
 import com.example.macrocounterremaster.models.NoteModel
+import com.example.macrocounterremaster.room.DatabaseInstance
 import com.example.macrocounterremaster.utils.Constants
 import com.example.macrocounterremaster.utils.ErrorMapCreator
 import com.example.macrocounterremaster.webServices.ServicePost
@@ -214,9 +214,31 @@ class MainActivity : AppCompatActivity(), NavigationView.OnNavigationItemSelecte
     }
 
     private fun setupEmptyRecycler(){
-        val noteList: ArrayList<NoteModel> = ArrayList()
-        rv_notes.layoutManager = LinearLayoutManager(this)
-        rv_notes.adapter = NotesRecyclerAdapter(noteList, this)
+        val month = MonthHelper.getMonth(Calendar.getInstance().get(Calendar.MONTH))
+        val day = Calendar.getInstance().get(Calendar.DAY_OF_MONTH)
+
+        val databaseInstance: DatabaseInstance = DatabaseInstance.getInstance(this)
+        val list: List<NoteModel> = databaseInstance.recordDao().findByDate(month, "$day")
+
+        if(list.isNotEmpty()){
+            if(!OrientationHelper.isLandscape(this)) {
+                rv_notes.layoutManager = LinearLayoutManager(this)
+            }else{
+                rv_notes.layoutManager = GridLayoutManager(this, 2)
+            }
+
+            rv_notes.adapter = NotesRecyclerAdapter(list.toMutableList(), this)
+
+        }else {
+            if(!OrientationHelper.isLandscape(this)){
+                rv_notes.layoutManager = LinearLayoutManager(this)
+            }else{
+                rv_notes.layoutManager = GridLayoutManager(this, 2)
+            }
+
+            val noteList: ArrayList<NoteModel> = ArrayList()
+            rv_notes.adapter = NotesRecyclerAdapter(noteList, this)
+        }
     }
 
     override fun onBackPressed() {
@@ -383,7 +405,16 @@ class MainActivity : AppCompatActivity(), NavigationView.OnNavigationItemSelecte
     private fun addNoteToRecycler(msg: String){
         val adapter: NotesRecyclerAdapter = rv_notes.adapter as NotesRecyclerAdapter
 
-        adapter.getList().add(NoteModel(MonthHelper.getMonth(Calendar.getInstance().get(Calendar.MONTH)), Calendar.DAY_OF_MONTH.toString(), msg))
+        val noteModel = NoteModel(
+            MonthHelper.getMonth(Calendar.getInstance().get(Calendar.MONTH)),
+            Calendar.getInstance().get(Calendar.DAY_OF_MONTH).toString(),
+            msg)
+
+        adapter.getList().add(noteModel)
         adapter.notifyDataSetChanged()
+
+        // after adding note to adapter, save it to Room
+        val databaseInstance: DatabaseInstance = DatabaseInstance.getInstance(this)
+        databaseInstance.recordDao().insertAll(noteModel)
     }
 }

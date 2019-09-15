@@ -28,5 +28,8 @@ class Constants {
         const val CARBS: String = "CARBS"
         const val FATS: String = "FATS"
         const val VALUES: String = "VALUES"
+        const val DESC_SET: String = "DESC_SET_"
+        const val DAY_SET: String = "DAY_SET_"
+        const val MONTH_SET: String = "MONTH_SET_"
     }
 }
