@@ -1,5 +1,6 @@
 package com.example.macrocounterremaster.activities
 
+import android.app.AlertDialog
 import android.app.Dialog
 import android.app.ProgressDialog
 import android.content.Intent
@@ -250,7 +251,17 @@ class MainActivity : AppCompatActivity(), NavigationView.OnNavigationItemSelecte
                 startActivityForResult(Intent(this@MainActivity, LoginActivity::class.java), Constants.LOGIN_CODE)
             }
             R.id.logout -> {
-                RoomDeleteAsyncTask(this).execute()
+                val dialogs = ConfirmDialogHelper.getConfirmDialog(this)
+                // Set a positive button and its click listener on alert dialog
+                dialogs.setPositiveButton(android.R.string.yes){ _, _ ->
+                    RoomDeleteAsyncTask(this).execute()
+                }
+                // Display a negative button on alert dialog
+                dialogs.setNegativeButton(android.R.string.no){ dialog, _ ->
+                    dialog.dismiss()
+                }
+                dialogs.create()
+                dialogs.show()
             }
         }
         val drawerLayout: DrawerLayout = findViewById(R.id.drawer_layout)
