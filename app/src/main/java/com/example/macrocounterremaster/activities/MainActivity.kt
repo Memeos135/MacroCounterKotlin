@@ -217,10 +217,11 @@ class MainActivity : AppCompatActivity(), NavigationView.OnNavigationItemSelecte
     }
 
     private fun setupEmptyRecycler(){
-        val month = MonthHelper.getMonth(Calendar.getInstance().get(Calendar.MONTH))
-        val day = Calendar.getInstance().get(Calendar.DAY_OF_MONTH)
+        val month = MonthHelper.getMonth(Calendar.getInstance().get(Calendar.MONTH)).toString()
+        val day = Calendar.getInstance().get(Calendar.DAY_OF_MONTH).toString()
+        val year = Calendar.getInstance().get(Calendar.YEAR).toString()
 
-        RoomSetupAsyncTask(month, day, this).execute()
+        RoomSetupAsyncTask(month, day, year, this).execute()
     }
 
     override fun onBackPressed() {
@@ -399,6 +400,7 @@ class MainActivity : AppCompatActivity(), NavigationView.OnNavigationItemSelecte
         val noteModel = NoteModel(
             MonthHelper.getMonth(Calendar.getInstance().get(Calendar.MONTH)),
             Calendar.getInstance().get(Calendar.DAY_OF_MONTH).toString(),
+            Calendar.getInstance().get(Calendar.YEAR).toString(),
             msg)
 
         RoomAddNoteAsyncTask(noteModel, this, adapter).execute()
@@ -448,7 +450,7 @@ class MainActivity : AppCompatActivity(), NavigationView.OnNavigationItemSelecte
         }
     }
 
-    class RoomSetupAsyncTask(private val month: String, private val day: Int, activity: MainActivity): AsyncTask<Void, Void, List<NoteModel>>(){
+    class RoomSetupAsyncTask(private val month: String, private val day: String, private val year: String, activity: MainActivity): AsyncTask<Void, Void, List<NoteModel>>(){
         private var weakReference: WeakReference<MainActivity> = WeakReference(activity)
         private var progressDialog: ProgressDialog? = null
 
@@ -468,7 +470,7 @@ class MainActivity : AppCompatActivity(), NavigationView.OnNavigationItemSelecte
 
             if(!activity.isFinishing) {
                 val databaseInstance: DatabaseInstance = DatabaseInstance.getInstance(activity)
-                return databaseInstance.recordDao().findByDate(month, "$day")
+                return databaseInstance.recordDao().findByDate(month, day, year)
             }
             return ArrayList()
         }

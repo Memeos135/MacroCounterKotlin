@@ -17,8 +17,8 @@ public interface RecordDao {
     List<NoteModel> getAll();
 
     @Query("SELECT * FROM notes WHERE month LIKE :month " +
-            "AND day LIKE :day")
-    List<NoteModel> findByDate(String month, String day);
+            "AND day LIKE :day AND year like :year")
+    List<NoteModel> findByDate(String month, String day, String year);
 
     @Query("SELECT COUNT(*) from notes")
     int countUsers();

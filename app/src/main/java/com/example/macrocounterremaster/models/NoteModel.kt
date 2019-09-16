@@ -24,10 +24,14 @@ class NoteModel() : Parcelable {
     @ColumnInfo(name = "description")
     private var description: String = ""
 
-    constructor(month: String, day: String, description: String): this(){
+    @ColumnInfo(name = "year")
+    private var year: String = ""
+
+    constructor(month: String, day: String, year: String, description: String): this(){
         this.month = month
         this.day = day
         this.description = description
+        this.year = year
     }
 
     fun getUid(): Int {
@@ -44,6 +48,14 @@ class NoteModel() : Parcelable {
 
     fun setDay(day: String){
         this.day = day
+    }
+
+    fun setYear(year: String){
+        this.year = year
+    }
+
+    fun getYear(): String{
+        return year
     }
 
     fun setDescription(description: String){
