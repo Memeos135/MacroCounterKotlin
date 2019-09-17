@@ -4,7 +4,6 @@ import android.app.Activity
 import android.app.Dialog
 import android.view.Window
 import android.view.WindowManager
-import kotlinx.android.synthetic.main.goal_dialog_layout.*
 
 class GoalDialogHelper {
     companion object{
@@ -14,9 +13,7 @@ class GoalDialogHelper {
             dialog.setContentView(layout)
             dialog.window!!.setBackgroundDrawableResource(android.R.color.transparent)
             dialog.window!!.setLayout (WindowManager.LayoutParams.MATCH_PARENT, WindowManager.LayoutParams.WRAP_CONTENT)
-            dialog.setCancelable(false)
-
-            dialog.iv_close.setOnClickListener { dialog.dismiss() }
+            dialog.setCancelable(true)
 
             return dialog
         }
