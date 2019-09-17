@@ -14,6 +14,8 @@
     <string name="addition_failed">فشل في إضافة النوته إلي قاعدة البيانات</string>
     <string name="deleting_items">يتم الآن حذف جميع النوتات</string>
     <string name="logout_confirmation"> هل أنت متأكد من رغبتك في الخروج؟ سيتم حذف جميع النوتات.</string>
+    <string name="updating_macros">يتم الآن تحديث المغذيات</string>
+    <string name="update_failed">فشل في تحديث المغذيات</string>
 
     <string name="menu_home">الصفحة الرئيسية</string>
     <string name="menu_gallery">صالة عرض</string>

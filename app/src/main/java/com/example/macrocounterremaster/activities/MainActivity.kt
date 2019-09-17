@@ -1,6 +1,5 @@
 package com.example.macrocounterremaster.activities
 
-import android.app.AlertDialog
 import android.app.Dialog
 import android.app.ProgressDialog
 import android.content.Intent
@@ -11,6 +10,7 @@ import android.os.Handler
 import android.preference.PreferenceManager
 import android.text.Editable
 import android.text.TextWatcher
+import android.view.KeyEvent
 import com.google.android.material.floatingactionbutton.FloatingActionButton
 import androidx.core.view.GravityCompat
 import androidx.appcompat.app.ActionBarDrawerToggle
@@ -20,6 +20,7 @@ import com.google.android.material.navigation.NavigationView
 import androidx.appcompat.app.AppCompatActivity
 import androidx.appcompat.widget.Toolbar
 import android.view.Menu
+import android.view.View
 import android.widget.TextView
 import androidx.recyclerview.widget.GridLayoutManager
 import androidx.recyclerview.widget.LinearLayoutManager
@@ -33,7 +34,9 @@ import com.example.macrocounterremaster.utils.Constants
 import com.example.macrocounterremaster.utils.ErrorMapCreator
 import com.example.macrocounterremaster.webServices.ServicePost
 import com.example.macrocounterremaster.webServices.requests.FetchDailyRequestModel
-import com.example.macrocounterremaster.webServices.responses.FetchDailyProgressResponse
+import com.example.macrocounterremaster.webServices.requests.UpdateMacrosRequestModel
+import com.example.macrocounterremaster.webServices.responses.FetchDailyProgressResponseModel
+import com.example.macrocounterremaster.webServices.responses.UpdateMacrosResponseModel
 import com.google.android.material.snackbar.Snackbar
 import kotlinx.android.synthetic.main.activity_main.*
 import kotlinx.android.synthetic.main.content_main.*
@@ -90,7 +93,7 @@ class MainActivity : AppCompatActivity(), NavigationView.OnNavigationItemSelecte
         }
     }
 
-    private class FetchDailyProgressAsyncTask(private val email: String, private val password: String, mainActivity: MainActivity): AsyncTask<Void, Void, FetchDailyProgressResponse>() {
+    private class FetchDailyProgressAsyncTask(private val email: String, private val password: String, mainActivity: MainActivity): AsyncTask<Void, Void, FetchDailyProgressResponseModel>() {
         private var weakReference: WeakReference<MainActivity> = WeakReference(mainActivity)
         private var progressDialog: ProgressDialog? = null
 
@@ -104,27 +107,27 @@ class MainActivity : AppCompatActivity(), NavigationView.OnNavigationItemSelecte
             }
         }
 
-        override fun doInBackground(vararg p0: Void?): FetchDailyProgressResponse {
+        override fun doInBackground(vararg p0: Void?): FetchDailyProgressResponseModel {
             val mainActivity: MainActivity = weakReference.get()!!
 
             if(!mainActivity.isFinishing){
                 return ServicePost.doPostDaily(FetchDailyRequestModel(email, password, mainActivity), mainActivity)
             }
-            return FetchDailyProgressResponse(null, null, null, ErrorMapCreator.getHashMap(mainActivity)[Constants.ZERO].toString())
+            return FetchDailyProgressResponseModel(null, null, null, ErrorMapCreator.getHashMap(mainActivity)[Constants.ZERO].toString())
         }
 
-        override fun onPostExecute(fetchDailyProgressResponse: FetchDailyProgressResponse?) {
-            super.onPostExecute(fetchDailyProgressResponse)
+        override fun onPostExecute(fetchDailyProgressResponseModel: FetchDailyProgressResponseModel?) {
+            super.onPostExecute(fetchDailyProgressResponseModel)
             val mainActivity: MainActivity = weakReference.get()!!
 
             if(!mainActivity.isFinishing){
                 progressDialog!!.cancel()
             }
 
-            if(fetchDailyProgressResponse!!.getError() == null){
-                mainActivity.updateUI(fetchDailyProgressResponse.getProteinProgress()!!, fetchDailyProgressResponse.getCarbsProgress()!!, fetchDailyProgressResponse.getFatsProgress()!!)
+            if(fetchDailyProgressResponseModel!!.getError() == null){
+                mainActivity.updateUI(fetchDailyProgressResponseModel.getProteinProgress()!!, fetchDailyProgressResponseModel.getCarbsProgress()!!, fetchDailyProgressResponseModel.getFatsProgress()!!)
             }else{
-                Snackbar.make(mainActivity.nsv_main, fetchDailyProgressResponse.getError().toString(), Snackbar.LENGTH_SHORT).show()
+                Snackbar.make(mainActivity.nsv_main, fetchDailyProgressResponseModel.getError().toString(), Snackbar.LENGTH_SHORT).show()
             }
 
         }
@@ -152,6 +155,23 @@ class MainActivity : AppCompatActivity(), NavigationView.OnNavigationItemSelecte
         tv_fat_remain.text = computeRemaining(fatProgress, Constants.FATS)
 
         computeCalories(proteinProgress, carbsProgress, fatProgress)
+    }
+
+    private fun updatedProgressUI(updatedValue: String, category: String){
+        when {
+            category.startsWith("P", true) -> {
+                tv_protein_current.text = updatedValue
+                computeCalories(tv_protein_current.text.toString(), tv_carbs_current.text.toString(), tv_fat_current.text.toString())
+            }
+            category.startsWith("C", true) -> {
+                tv_carbs_current.text = updatedValue
+                computeCalories(tv_protein_current.text.toString(), tv_carbs_current.text.toString(), tv_fat_current.text.toString())
+            }
+            else -> {
+                tv_fat_current.text = updatedValue
+                computeCalories(tv_protein_current.text.toString(), tv_carbs_current.text.toString(), tv_fat_current.text.toString())
+            }
+        }
     }
 
     private fun computeCalories(proteinProgress: String, carbsProgress: String, fatProgress: String){
@@ -340,6 +360,7 @@ class MainActivity : AppCompatActivity(), NavigationView.OnNavigationItemSelecte
     }
 
     private fun goalDisplay(view: TextView){
+        val activity = this
         val dialog = NoteDialogHelper.showInputDialog(this,
             R.layout.goal_dialog_layout
         )
@@ -348,8 +369,38 @@ class MainActivity : AppCompatActivity(), NavigationView.OnNavigationItemSelecte
         }
         dialog.window!!.setBackgroundDrawableResource(android.R.color.transparent)
         dialog.category.text = view.tag.toString()
+
+        dialog.cat_input.setOnKeyListener(View.OnKeyListener { v, keyCode, event ->
+            if (keyCode == KeyEvent.KEYCODE_ENTER && event.action == KeyEvent.ACTION_UP) {
+                if(dialog.cat_input.text.isEmpty()){
+                    Snackbar.make(nsv_main, R.string.fill_empty_fields, Snackbar.LENGTH_SHORT).show()
+                }else{
+                    when {
+                        dialog.category.text.toString().startsWith("P", true) -> {
+                            // post request to AWS for protein daily update
+                            val updatedValue = tv_protein_current.text.toString().toInt() + dialog.cat_input.text.toString().toInt()
+                            UpdateDailyProgressAsyncTask(dialog.cat_input.text.toString(), updatedValue.toString(), activity).execute()
+                        }
+                        dialog.category.text.toString().startsWith("C", true) -> {
+                            // post request to AWS for carbs daily update
+                            val updatedValue = tv_carbs_current.text.toString().toInt() + dialog.cat_input.text.toString().toInt()
+                            UpdateDailyProgressAsyncTask(dialog.cat_input.text.toString(), updatedValue.toString(), activity).execute()
+                        }
+                        else -> {
+                            // post request to AWS for fats daily update
+                            val updatedValue = tv_fat_current.text.toString().toInt() + dialog.cat_input.text.toString().toInt()
+                            UpdateDailyProgressAsyncTask(dialog.cat_input.text.toString(), updatedValue.toString(), activity).execute()
+                        }
+                    }
+                }
+                return@OnKeyListener true
+            }
+            false
+        })
+
         dialog.show()
     }
+
 
     private fun showNoteInputDialog(){
         val dialog = NoteDialogHelper.showInputDialog(this,
@@ -544,6 +595,48 @@ class MainActivity : AppCompatActivity(), NavigationView.OnNavigationItemSelecte
                     activity.resetUI()
                 }else{
                     Snackbar.make(activity.nsv_main, R.string.deletion_failed, Snackbar.LENGTH_SHORT).show()
+                }
+            }
+        }
+    }
+
+    class UpdateDailyProgressAsyncTask(private val category: String, private val updatedValue: String, activity: MainActivity): AsyncTask<Void, Void, UpdateMacrosResponseModel>(){
+        private var weakReference: WeakReference<MainActivity> = WeakReference(activity)
+        private var progressDialog: ProgressDialog? = null
+
+        override fun onPreExecute() {
+            super.onPreExecute()
+
+            val activity = weakReference.get()!!
+
+            if(!activity.isFinishing){
+                progressDialog = ProgressDialogHelper.getProgressDialog(activity, R.string.updating_macros)
+                progressDialog!!.show()
+            }
+        }
+
+        override fun doInBackground(vararg p0: Void?): UpdateMacrosResponseModel {
+            val activity = weakReference.get()!!
+
+            if(!activity.isFinishing){
+                val updateValuesRequest = UpdateMacrosRequestModel(category, updatedValue, activity)
+                return ServicePost.doPostUpdateDaily(updateValuesRequest, activity)
+            }
+            return UpdateMacrosResponseModel(null, null)
+        }
+
+        override fun onPostExecute(result: UpdateMacrosResponseModel) {
+            super.onPostExecute(result)
+
+            val activity = weakReference.get()!!
+
+            if(!activity.isFinishing){
+                progressDialog!!.cancel()
+
+                if(result.getResponse() != null){
+                    activity.updatedProgressUI(updatedValue, category)
+                }else{
+                    Snackbar.make(activity.nsv_main, result.getCode().toString(), Snackbar.LENGTH_SHORT).show()
                 }
             }
         }

@@ -14,6 +14,8 @@
     <string name="addition_failed">Failed to add notes to database</string>
     <string name="deleting_items">Deleting All Notes</string>
     <string name="logout_confirmation">Are you sure you want to logout? All notes will be deleted.</string>
+    <string name="updating_macros">Updating your macros</string>
+    <string name="update_failed">Update macros failed</string>
 
     <string name="menu_home">Home</string>
     <string name="menu_gallery">Gallery</string>
@@ -70,7 +72,7 @@
     <string name="unauthorized" translatable="false">UNAUTHORIZED</string>
     <string name="payment_required" translatable="false">PAYMENT REQUIRED</string>
     <string name="FORBIDDEN" translatable="false">FORBIDDEN</string>
-    <string name="not_found" translatable="false">USER NOT FOUND</string>
+    <string name="not_found" translatable="false">USER/PAGE NOT FOUND</string>
     <string name="method_not_allowed" translatable="false">METHOD NOT ALLOWED</string>
     <string name="not_acceptable" translatable="false">NOT ACCEPTABLE</string>
     <string name="proxy_authentication_required" translatable="false">PROXY AUTHENTICATION REQUIRED</string>

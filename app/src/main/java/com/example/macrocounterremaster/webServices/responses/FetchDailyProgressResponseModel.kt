@@ -1,6 +1,6 @@
 package com.example.macrocounterremaster.webServices.responses
 
-class FetchDailyProgressResponse(
+class FetchDailyProgressResponseModel(
     private val protein_progress: String?,
     private val carbs_progress: String?,
     private val fats_progress: String?,
