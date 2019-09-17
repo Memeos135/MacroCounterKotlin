@@ -15,7 +15,7 @@
     <string name="deleting_items">Deleting All Notes</string>
     <string name="logout_confirmation">Are you sure you want to logout? All notes will be deleted.</string>
     <string name="updating_macros">Updating your macros</string>
-    <string name="update_failed">Update macros failed</string>
+    <string name="update">Update Macros</string>
 
     <string name="menu_home">Home</string>
     <string name="menu_gallery">Gallery</string>
@@ -26,6 +26,8 @@
     <string name="login">Login</string>
     <string name="implement_interface">Interface must be implemented</string>
     <string name="logout">Logout</string>
+    <string name="submit">Submit</string>
+    <string name="successful_update">Macros update successful</string>
 
     <string name="P">P</string>
     <string name="C">C</string>
@@ -39,6 +41,9 @@
     <string name="back">Back</string>
     <string name="register">Register</string>
 
+    <string name="protein">Protein</string>
+    <string name="carbs">Carbohydrates</string>
+    <string name="fats">Fats</string>
     <string name="protein_goal">Daily protein intake</string>
     <string name="carb_goal">Daily carbohydrate intake</string>
     <string name="fat_goal">Daily fat intake</string>

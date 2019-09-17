@@ -15,8 +15,12 @@
     <string name="deleting_items">يتم الآن حذف جميع النوتات</string>
     <string name="logout_confirmation"> هل أنت متأكد من رغبتك في الخروج؟ سيتم حذف جميع النوتات.</string>
     <string name="updating_macros">يتم الآن تحديث المغذيات</string>
-    <string name="update_failed">فشل في تحديث المغذيات</string>
-
+    <string name="update">تحديث التغذيات</string>
+    <string name="protein">البروتين</string>
+    <string name="carbs">الكربوهيدرات</string>
+    <string name="successful_update">تم تحديث التغذيات بنجاح</string>
+    <string name="fats">الدهون</string>
+    <string name="submit">إرسال</string>
     <string name="menu_home">الصفحة الرئيسية</string>
     <string name="menu_gallery">صالة عرض</string>
     <string name="menu_slideshow">عرض الشرائح</string>

@@ -6,4 +6,5 @@
     <string name="signup_url" translatable="false">http://35.154.196.173/signup</string>
     <string name="fetch_daily_url" translatable="false">http://35.154.196.173/getDailyProgress</string>
     <string name="update_macros_url" translatable="false">http://35.154.196.173/postDailyProgress</string>
+    <string name="goal_update_url" translatable="false">http://35.154.196.173/postGoalUpdate</string>
 </resources>

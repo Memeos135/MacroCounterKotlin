@@ -34,6 +34,7 @@ import com.example.macrocounterremaster.utils.Constants
 import com.example.macrocounterremaster.utils.ErrorMapCreator
 import com.example.macrocounterremaster.webServices.ServicePost
 import com.example.macrocounterremaster.webServices.requests.FetchDailyRequestModel
+import com.example.macrocounterremaster.webServices.requests.UpdateGoalMacrosRequestModel
 import com.example.macrocounterremaster.webServices.requests.UpdateMacrosRequestModel
 import com.example.macrocounterremaster.webServices.responses.FetchDailyProgressResponseModel
 import com.example.macrocounterremaster.webServices.responses.UpdateMacrosResponseModel
@@ -43,6 +44,8 @@ import kotlinx.android.synthetic.main.content_main.*
 import kotlinx.android.synthetic.main.goal_dialog_layout.*
 import kotlinx.android.synthetic.main.nav_header_main.*
 import kotlinx.android.synthetic.main.notes_dialog_layout.*
+import kotlinx.android.synthetic.main.update_dialog_layout.protein_cat
+import kotlinx.android.synthetic.main.update_dialog_layout.protein_cat_input
 import java.lang.ref.WeakReference
 import java.util.*
 import kotlin.collections.ArrayList
@@ -91,47 +94,6 @@ class MainActivity : AppCompatActivity(), NavigationView.OnNavigationItemSelecte
 
             FetchDailyProgressAsyncTask(email.toString(), password.toString(), this).execute()
         }
-    }
-
-    private class FetchDailyProgressAsyncTask(private val email: String, private val password: String, mainActivity: MainActivity): AsyncTask<Void, Void, FetchDailyProgressResponseModel>() {
-        private var weakReference: WeakReference<MainActivity> = WeakReference(mainActivity)
-        private var progressDialog: ProgressDialog? = null
-
-        override fun onPreExecute() {
-            super.onPreExecute()
-            val mainActivity: MainActivity = weakReference.get()!!
-
-            if(!mainActivity.isFinishing){
-                progressDialog = ProgressDialogHelper.getProgressDialog(mainActivity, R.string.fetching)
-                progressDialog!!.show()
-            }
-        }
-
-        override fun doInBackground(vararg p0: Void?): FetchDailyProgressResponseModel {
-            val mainActivity: MainActivity = weakReference.get()!!
-
-            if(!mainActivity.isFinishing){
-                return ServicePost.doPostDaily(FetchDailyRequestModel(email, password, mainActivity), mainActivity)
-            }
-            return FetchDailyProgressResponseModel(null, null, null, ErrorMapCreator.getHashMap(mainActivity)[Constants.ZERO].toString())
-        }
-
-        override fun onPostExecute(fetchDailyProgressResponseModel: FetchDailyProgressResponseModel?) {
-            super.onPostExecute(fetchDailyProgressResponseModel)
-            val mainActivity: MainActivity = weakReference.get()!!
-
-            if(!mainActivity.isFinishing){
-                progressDialog!!.cancel()
-            }
-
-            if(fetchDailyProgressResponseModel!!.getError() == null){
-                mainActivity.updateUI(fetchDailyProgressResponseModel.getProteinProgress()!!, fetchDailyProgressResponseModel.getCarbsProgress()!!, fetchDailyProgressResponseModel.getFatsProgress()!!)
-            }else{
-                Snackbar.make(mainActivity.nsv_main, fetchDailyProgressResponseModel.getError().toString(), Snackbar.LENGTH_SHORT).show()
-            }
-
-        }
-
     }
 
     private fun updateDrawerUI(name: String?, email: String?){
@@ -271,7 +233,17 @@ class MainActivity : AppCompatActivity(), NavigationView.OnNavigationItemSelecte
             R.id.nav_login -> {
                 startActivityForResult(Intent(this@MainActivity, LoginActivity::class.java), Constants.LOGIN_CODE)
             }
-            R.id.logout -> {
+            R.id.nav_update -> {
+                val dialog = GoalDialogHelper.getGoalDialog(this, R.layout.goal_dialog_layout)
+
+                setupGoalUpdateListener(dialog)
+
+                if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
+                    dialog.create()
+                }
+                dialog.show()
+            }
+            R.id.nav_logout -> {
                 val dialogs = ConfirmDialogHelper.getConfirmDialog(this)
                 // Set a positive button and its click listener on alert dialog
                 dialogs.setPositiveButton(android.R.string.yes){ _, _ ->
@@ -288,6 +260,22 @@ class MainActivity : AppCompatActivity(), NavigationView.OnNavigationItemSelecte
         val drawerLayout: DrawerLayout = findViewById(R.id.drawer_layout)
         drawerLayout.closeDrawer(GravityCompat.START)
         return true
+    }
+
+    private fun setupGoalUpdateListener(dialog: Dialog){
+        val activity = this
+        dialog.btnSubmit.setOnClickListener {
+            if (dialog.protein_cat_input.text.toString().isEmpty() || dialog.carbs_cat_input.text.toString().isEmpty() || dialog.fat_cat_input.text.toString().isEmpty()) {
+                Snackbar.make(nsv_main, R.string.fill_empty_fields, Snackbar.LENGTH_SHORT).show()
+            } else {
+                UpdateGoalAsyncTask(
+                    dialog.protein_cat_input.text.toString(),
+                    dialog.carbs_cat_input.text.toString(),
+                    dialog.fat_cat_input.text.toString(),
+                    activity
+                ).execute()
+            }
+        }
     }
 
     private fun resetUI(){
@@ -362,34 +350,34 @@ class MainActivity : AppCompatActivity(), NavigationView.OnNavigationItemSelecte
     private fun goalDisplay(view: TextView){
         val activity = this
         val dialog = NoteDialogHelper.showInputDialog(this,
-            R.layout.goal_dialog_layout
+            R.layout.update_dialog_layout
         )
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
             dialog.create()
         }
         dialog.window!!.setBackgroundDrawableResource(android.R.color.transparent)
-        dialog.category.text = view.tag.toString()
+        dialog.protein_cat.text = view.tag.toString()
 
-        dialog.cat_input.setOnKeyListener(View.OnKeyListener { v, keyCode, event ->
+        dialog.protein_cat_input.setOnKeyListener(View.OnKeyListener { v, keyCode, event ->
             if (keyCode == KeyEvent.KEYCODE_ENTER && event.action == KeyEvent.ACTION_UP) {
-                if(dialog.cat_input.text.isEmpty()){
+                if(dialog.protein_cat_input.text.isEmpty()){
                     Snackbar.make(nsv_main, R.string.fill_empty_fields, Snackbar.LENGTH_SHORT).show()
                 }else{
                     when {
-                        dialog.category.text.toString().startsWith("P", true) -> {
+                        dialog.protein_cat.text.toString().startsWith("P", true) -> {
                             // post request to AWS for protein daily update
-                            val updatedValue = tv_protein_current.text.toString().toInt() + dialog.cat_input.text.toString().toInt()
-                            UpdateDailyProgressAsyncTask(dialog.cat_input.text.toString(), updatedValue.toString(), activity).execute()
+                            val updatedValue = tv_protein_current.text.toString().toInt() + dialog.protein_cat_input.text.toString().toInt()
+                            UpdateDailyProgressAsyncTask(dialog.protein_cat_input.text.toString(), updatedValue.toString(), activity).execute()
                         }
-                        dialog.category.text.toString().startsWith("C", true) -> {
+                        dialog.protein_cat.text.toString().startsWith("C", true) -> {
                             // post request to AWS for carbs daily update
-                            val updatedValue = tv_carbs_current.text.toString().toInt() + dialog.cat_input.text.toString().toInt()
-                            UpdateDailyProgressAsyncTask(dialog.cat_input.text.toString(), updatedValue.toString(), activity).execute()
+                            val updatedValue = tv_carbs_current.text.toString().toInt() + dialog.protein_cat_input.text.toString().toInt()
+                            UpdateDailyProgressAsyncTask(dialog.protein_cat_input.text.toString(), updatedValue.toString(), activity).execute()
                         }
                         else -> {
                             // post request to AWS for fats daily update
-                            val updatedValue = tv_fat_current.text.toString().toInt() + dialog.cat_input.text.toString().toInt()
-                            UpdateDailyProgressAsyncTask(dialog.cat_input.text.toString(), updatedValue.toString(), activity).execute()
+                            val updatedValue = tv_fat_current.text.toString().toInt() + dialog.protein_cat_input.text.toString().toInt()
+                            UpdateDailyProgressAsyncTask(dialog.protein_cat_input.text.toString(), updatedValue.toString(), activity).execute()
                         }
                     }
                 }
@@ -455,6 +443,47 @@ class MainActivity : AppCompatActivity(), NavigationView.OnNavigationItemSelecte
             msg)
 
         RoomAddNoteAsyncTask(noteModel, this, adapter).execute()
+    }
+
+    private class FetchDailyProgressAsyncTask(private val email: String, private val password: String, mainActivity: MainActivity): AsyncTask<Void, Void, FetchDailyProgressResponseModel>() {
+        private var weakReference: WeakReference<MainActivity> = WeakReference(mainActivity)
+        private var progressDialog: ProgressDialog? = null
+
+        override fun onPreExecute() {
+            super.onPreExecute()
+            val mainActivity: MainActivity = weakReference.get()!!
+
+            if(!mainActivity.isFinishing){
+                progressDialog = ProgressDialogHelper.getProgressDialog(mainActivity, R.string.fetching)
+                progressDialog!!.show()
+            }
+        }
+
+        override fun doInBackground(vararg p0: Void?): FetchDailyProgressResponseModel {
+            val mainActivity: MainActivity = weakReference.get()!!
+
+            if(!mainActivity.isFinishing){
+                return ServicePost.doPostDaily(FetchDailyRequestModel(email, password, mainActivity), mainActivity)
+            }
+            return FetchDailyProgressResponseModel(null, null, null, ErrorMapCreator.getHashMap(mainActivity)[Constants.ZERO].toString())
+        }
+
+        override fun onPostExecute(fetchDailyProgressResponseModel: FetchDailyProgressResponseModel?) {
+            super.onPostExecute(fetchDailyProgressResponseModel)
+            val mainActivity: MainActivity = weakReference.get()!!
+
+            if(!mainActivity.isFinishing){
+                progressDialog!!.cancel()
+            }
+
+            if(fetchDailyProgressResponseModel!!.getError() == null){
+                mainActivity.updateUI(fetchDailyProgressResponseModel.getProteinProgress()!!, fetchDailyProgressResponseModel.getCarbsProgress()!!, fetchDailyProgressResponseModel.getFatsProgress()!!)
+            }else{
+                Snackbar.make(mainActivity.nsv_main, fetchDailyProgressResponseModel.getError().toString(), Snackbar.LENGTH_SHORT).show()
+            }
+
+        }
+
     }
 
     class RoomAddNoteAsyncTask(private val noteModel: NoteModel, activity: MainActivity, private val adapter: NotesRecyclerAdapter): AsyncTask<Void, Void, Boolean>(){
@@ -635,6 +664,49 @@ class MainActivity : AppCompatActivity(), NavigationView.OnNavigationItemSelecte
 
                 if(result.getResponse() != null){
                     activity.updatedProgressUI(updatedValue, category)
+                }else{
+                    Snackbar.make(activity.nsv_main, result.getCode().toString(), Snackbar.LENGTH_SHORT).show()
+                }
+            }
+        }
+    }
+
+    class UpdateGoalAsyncTask(private val proteinVal: String, private val carbVal: String, private val fatVal: String, activity: MainActivity): AsyncTask<Void, Void, UpdateMacrosResponseModel>(){
+        private var weakReference: WeakReference<MainActivity> = WeakReference(activity)
+        private var progressDialog: ProgressDialog? = null
+
+        override fun onPreExecute() {
+            super.onPreExecute()
+
+            val activity = weakReference.get()!!
+
+            if(!activity.isFinishing){
+                progressDialog = ProgressDialogHelper.getProgressDialog(activity, R.string.updating_macros)
+                progressDialog!!.show()
+            }
+        }
+
+        override fun doInBackground(vararg p0: Void?): UpdateMacrosResponseModel {
+            val activity = weakReference.get()!!
+
+            if(!activity.isFinishing){
+                val updateValuesRequest = UpdateGoalMacrosRequestModel(proteinVal, carbVal, fatVal, activity)
+                return ServicePost.doPostUpdateGoal(updateValuesRequest, activity)
+            }
+            return UpdateMacrosResponseModel(null, null)
+        }
+
+        override fun onPostExecute(result: UpdateMacrosResponseModel) {
+            super.onPostExecute(result)
+
+            val activity = weakReference.get()!!
+
+            if(!activity.isFinishing){
+                progressDialog!!.cancel()
+
+                if(result.getResponse() != null){
+                    SaveHelper.saveGoalValues(activity, proteinVal, carbVal, fatVal)
+                    Snackbar.make(activity.nsv_main, R.string.successful_update, Snackbar.LENGTH_SHORT).show()
                 }else{
                     Snackbar.make(activity.nsv_main, result.getCode().toString(), Snackbar.LENGTH_SHORT).show()
                 }

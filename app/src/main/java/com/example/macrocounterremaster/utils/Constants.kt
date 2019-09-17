@@ -5,7 +5,6 @@ class Constants {
         const val IMPLEMENTATION_ERROR : String = "INTERFACE ISSUE"
         const val ZERO : String = "0"
         const val MESSAGE : String = "message"
-        const val LOGIN_FAILED : String = "AUTO LOGIN FAILED"
         const val EMAIL: String = "EMAIL"
         const val PASSWORD: String = "PASSWORD"
         const val TOKEN: String = "TOKEN"
@@ -17,7 +16,6 @@ class Constants {
         const val NAME: String = "NAME"
         const val UPDATE_UI_FAILED: String = "Update UI Failed"
         const val AUTO_LOGIN: String = "AUTO LOGIN"
-        const val USER_DATA: String = "USER DATA"
         const val PROTEIN_PROGRESS: String = "PROTEIN PROGRESS"
         const val PROTEIN_GOAL: String = "PROTEIN GOAL"
         const val CARBS_GOAL: String = "CARBS GOAL"
@@ -28,8 +26,5 @@ class Constants {
         const val CARBS: String = "CARBS"
         const val FATS: String = "FATS"
         const val VALUES: String = "VALUES"
-        const val DESC_SET: String = "DESC_SET_"
-        const val DAY_SET: String = "DAY_SET_"
-        const val MONTH_SET: String = "MONTH_SET_"
     }
 }

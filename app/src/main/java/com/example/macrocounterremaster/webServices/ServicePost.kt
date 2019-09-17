@@ -6,10 +6,7 @@ import com.example.macrocounterremaster.R
 import com.example.macrocounterremaster.helpers.SaveHelper
 import com.example.macrocounterremaster.utils.Constants
 import com.example.macrocounterremaster.utils.ErrorMapCreator
-import com.example.macrocounterremaster.webServices.requests.FetchDailyRequestModel
-import com.example.macrocounterremaster.webServices.requests.LoginRequestModel
-import com.example.macrocounterremaster.webServices.requests.RegisterRequestModel
-import com.example.macrocounterremaster.webServices.requests.UpdateMacrosRequestModel
+import com.example.macrocounterremaster.webServices.requests.*
 import com.example.macrocounterremaster.webServices.responses.AuthenticationResponseModel
 import com.example.macrocounterremaster.webServices.responses.FetchDailyProgressResponseModel
 import com.example.macrocounterremaster.webServices.responses.UpdateMacrosResponseModel
@@ -22,6 +19,65 @@ class ServicePost {
     companion object {
         private fun error(responseCode: Int, activity: Activity):String{
             return responseCode.toString() + " - " + ErrorMapCreator.getHashMap(activity)[responseCode.toString()]
+        }
+
+        fun doPostUpdateGoal(updateGoalMacrosRequestModel: UpdateGoalMacrosRequestModel, activity: Activity): UpdateMacrosResponseModel{
+            try{
+                val client: OkHttpClient = OkHttpClient.Builder()
+                    .connectTimeout(15, TimeUnit.SECONDS)
+                    .writeTimeout(60, TimeUnit.SECONDS)
+                    .readTimeout(30, TimeUnit.SECONDS)
+                    .build()
+
+                val body: RequestBody = RequestBody.create(
+                    MediaType.parse(activity.getString(R.string.x_urlencoded)),
+                    updateGoalMacrosRequestModel.getPostFormat()
+                )
+                val requestBuilder: Request.Builder = Request.Builder()
+                    .url(updateGoalMacrosRequestModel.getPostURL())
+                    .post(body)
+
+                val response: Response = client.newCall(requestBuilder.build()).execute()
+
+                val result = response.body()!!.string()
+
+                if (response.code() == 401){
+                    // fetch token then retry
+                    val email = PreferenceManager.getDefaultSharedPreferences(activity).getString(Constants.EMAIL, "")
+                    val password = PreferenceManager.getDefaultSharedPreferences(activity).getString(Constants.PASSWORD, "")
+
+                    val authenticationResponseModel = doPostToken(LoginRequestModel(email.toString(), password.toString(), activity.getString(R.string.token_url)), true, activity)
+
+                    return if(authenticationResponseModel.getCode() == null){
+                        // save token
+                        val id = authenticationResponseModel.getId()
+                        SaveHelper.saveToken(id!!, activity)
+                        // doPostUpdateDaily again
+                        doPostUpdateGoal(updateGoalMacrosRequestModel, activity)
+                    }else{
+                        return UpdateMacrosResponseModel(null, null)
+                    }
+                }else{
+                    return if (response.code() == 200 && !result.contains(Constants.MESSAGE)) {
+                        // if doPostUpdateDaily is successful > return token
+                        Gson().fromJson(result, UpdateMacrosResponseModel::class.java)
+
+                        // if doPostUpdateDaily is not successful > return error code
+                    } else if (response.code() == 200 && result.contains(Constants.MESSAGE)) {
+                        val updateGoalResponseModel = UpdateMacrosResponseModel(ErrorMapCreator.getHashMap(activity)[Constants.ZERO].toString(), null)
+                        updateGoalResponseModel
+
+                        // if doPostUpdateDaily is not successful due to network issues > return default error code
+                    } else {
+                        val updateGoalResponseModel = UpdateMacrosResponseModel(error(response.code(), activity), null)
+                        updateGoalResponseModel
+                    }
+                }
+
+            }catch (e: Exception){
+                e.printStackTrace()
+                return UpdateMacrosResponseModel(ErrorMapCreator.getHashMap(activity)[Constants.ZERO].toString(), null)
+            }
         }
 
         fun doPostUpdateDaily(updateValueRequestModel: UpdateMacrosRequestModel, activity: Activity): UpdateMacrosResponseModel{
