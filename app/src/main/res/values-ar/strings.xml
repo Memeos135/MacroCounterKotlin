@@ -18,6 +18,7 @@
     <string name="update">تحديث التغذيات</string>
     <string name="protein">البروتين</string>
     <string name="carbs">الكربوهيدرات</string>
+    <string name="fetch_failed">سحب التغذيات فشل</string>
     <string name="successful_update">تم تحديث التغذيات بنجاح</string>
     <string name="fats">الدهون</string>
     <string name="submit">إرسال</string>

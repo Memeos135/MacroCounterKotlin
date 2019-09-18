@@ -21,6 +21,65 @@ class ServicePost {
             return responseCode.toString() + " - " + ErrorMapCreator.getHashMap(activity)[responseCode.toString()]
         }
 
+        fun doPostSpecific(fetchSpecificDayRequestModel: FetchSpecificDayRequestModel, activity: Activity): FetchDailyProgressResponseModel{
+            try{
+                val client: OkHttpClient = OkHttpClient.Builder()
+                    .connectTimeout(15, TimeUnit.SECONDS)
+                    .writeTimeout(60, TimeUnit.SECONDS)
+                    .readTimeout(30, TimeUnit.SECONDS)
+                    .build()
+
+                val body: RequestBody = RequestBody.create(
+                    MediaType.parse(activity.getString(R.string.x_urlencoded)),
+                    fetchSpecificDayRequestModel.getPostFormat()
+                )
+                val requestBuilder: Request.Builder = Request.Builder()
+                    .url(fetchSpecificDayRequestModel.getURL())
+                    .post(body)
+
+                val response: Response = client.newCall(requestBuilder.build()).execute()
+
+                val result = response.body()!!.string()
+
+                if (response.code() == 401){
+                    // fetch token then retry
+                    val email = PreferenceManager.getDefaultSharedPreferences(activity).getString(Constants.EMAIL, "")
+                    val password = PreferenceManager.getDefaultSharedPreferences(activity).getString(Constants.PASSWORD, "")
+
+                    val authenticationResponseModel = doPostToken(LoginRequestModel(email.toString(), password.toString(), activity.getString(R.string.token_url)), true, activity)
+
+                    return if(authenticationResponseModel.getCode() == null){
+                        // save token
+                        val id = authenticationResponseModel.getId()
+                        SaveHelper.saveToken(id!!, activity)
+                        // doPostUpdateDaily again
+                        doPostSpecific(fetchSpecificDayRequestModel, activity)
+                    }else{
+                        return FetchDailyProgressResponseModel(null, null, null, authenticationResponseModel.getCode())
+                    }
+                }else{
+                    return if (response.code() == 200 && !result.contains(Constants.MESSAGE)) {
+                        // if fetching is successful > return token
+                        Gson().fromJson(result, FetchDailyProgressResponseModel::class.java)
+
+                        // if fetching is not successful > return error code
+                    } else if (response.code() == 200 && result.contains(Constants.MESSAGE)) {
+                        val fetchDailyProgressResponse = FetchDailyProgressResponseModel(null, null, null, error(response.code(), activity))
+                        fetchDailyProgressResponse
+
+                        // if fetching is not successful due to network issues > return default error code
+                    } else {
+                        val fetchDailyProgressResponse = FetchDailyProgressResponseModel(null, null, null, ErrorMapCreator.getHashMap(activity)[Constants.ZERO].toString())
+                        fetchDailyProgressResponse
+                    }
+                }
+
+            }catch (e: Exception){
+                e.printStackTrace()
+                return FetchDailyProgressResponseModel(null, null, null, ErrorMapCreator.getHashMap(activity)[Constants.ZERO].toString())
+            }
+        }
+
         fun doPostUpdateGoal(updateGoalMacrosRequestModel: UpdateGoalMacrosRequestModel, activity: Activity): UpdateMacrosResponseModel{
             try{
                 val client: OkHttpClient = OkHttpClient.Builder()

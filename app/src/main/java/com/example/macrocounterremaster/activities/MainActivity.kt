@@ -34,6 +34,7 @@ import com.example.macrocounterremaster.utils.Constants
 import com.example.macrocounterremaster.utils.ErrorMapCreator
 import com.example.macrocounterremaster.webServices.ServicePost
 import com.example.macrocounterremaster.webServices.requests.FetchDailyRequestModel
+import com.example.macrocounterremaster.webServices.requests.FetchSpecificDayRequestModel
 import com.example.macrocounterremaster.webServices.requests.UpdateGoalMacrosRequestModel
 import com.example.macrocounterremaster.webServices.requests.UpdateMacrosRequestModel
 import com.example.macrocounterremaster.webServices.responses.FetchDailyProgressResponseModel
@@ -49,6 +50,7 @@ import kotlinx.android.synthetic.main.update_dialog_layout.protein_cat_input
 import java.lang.ref.WeakReference
 import java.util.*
 import kotlin.collections.ArrayList
+import kotlin.math.acos
 
 class MainActivity : AppCompatActivity(), NavigationView.OnNavigationItemSelectedListener {
 
@@ -76,6 +78,7 @@ class MainActivity : AppCompatActivity(), NavigationView.OnNavigationItemSelecte
 
         setupTitleListeners()
         setupEmptyRecycler()
+        setupCalenarListener()
 
         val autoLogin = PreferenceManager.getDefaultSharedPreferences(this).getString(Constants.AUTO_LOGIN, "")
         val email = PreferenceManager.getDefaultSharedPreferences(this).getString(Constants.EMAIL, "")
@@ -93,6 +96,21 @@ class MainActivity : AppCompatActivity(), NavigationView.OnNavigationItemSelecte
             val password = PreferenceManager.getDefaultSharedPreferences(this).getString(Constants.PASSWORD, "")
 
             FetchDailyProgressAsyncTask(email.toString(), password.toString(), this).execute()
+        }
+    }
+
+    private fun setupCalenarListener(){
+        calendarView.setOnDateChangeListener { calendarView, i, i2, i3 ->
+            // i = year
+            // i2 = month
+            // i3 = day
+            val email = PreferenceManager.getDefaultSharedPreferences(this).getString(Constants.EMAIL, "")
+            val password = PreferenceManager.getDefaultSharedPreferences(this).getString(Constants.PASSWORD, "")
+            if(email.toString().isNotEmpty() && password.toString().isNotEmpty()) {
+                FetchSpecificDayMacrosAsyncTask(email.toString(), password.toString(), i.toString(), i2.toString(), i3.toString(), this).execute()
+            }else{
+                Snackbar.make(nsv_main, R.string.fetch_failed, Snackbar.LENGTH_SHORT).show()
+            }
         }
     }
 
@@ -236,7 +254,7 @@ class MainActivity : AppCompatActivity(), NavigationView.OnNavigationItemSelecte
             R.id.nav_update -> {
                 val dialog = GoalDialogHelper.getGoalDialog(this, R.layout.goal_dialog_layout)
 
-                setupGoalUpdateListener(dialog)
+                setupGoalUpdateListenerAndHints(dialog)
 
                 if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
                     dialog.create()
@@ -262,8 +280,17 @@ class MainActivity : AppCompatActivity(), NavigationView.OnNavigationItemSelecte
         return true
     }
 
-    private fun setupGoalUpdateListener(dialog: Dialog){
+    private fun setupGoalUpdateListenerAndHints(dialog: Dialog){
         val activity = this
+
+        val protein = PreferenceManager.getDefaultSharedPreferences(this).getString(Constants.PROTEIN_GOAL, "")
+        val carbs = PreferenceManager.getDefaultSharedPreferences(this).getString(Constants.CARBS_GOAL, "")
+        val fats = PreferenceManager.getDefaultSharedPreferences(this).getString(Constants.FATS_GOAL, "")
+
+        dialog.protein_cat_input.hint = protein.toString()
+        dialog.carbs_cat_input.hint = carbs.toString()
+        dialog.fat_cat_input.hint = fats.toString()
+
         dialog.btnSubmit.setOnClickListener {
             if (dialog.protein_cat_input.text.toString().isEmpty() || dialog.carbs_cat_input.text.toString().isEmpty() || dialog.fat_cat_input.text.toString().isEmpty()) {
                 Snackbar.make(nsv_main, R.string.fill_empty_fields, Snackbar.LENGTH_SHORT).show()
@@ -444,6 +471,50 @@ class MainActivity : AppCompatActivity(), NavigationView.OnNavigationItemSelecte
 
         RoomAddNoteAsyncTask(noteModel, this, adapter).execute()
     }
+    private class FetchSpecificDayMacrosAsyncTask(private val email: String, private val password: String, private val year: String, private val month: String, private val day: String, activity: MainActivity): AsyncTask<Void, Void, FetchDailyProgressResponseModel>(){
+        private var weakReference: WeakReference<MainActivity> = WeakReference(activity)
+        private var progressDialog: ProgressDialog? = null
+
+        override fun onPreExecute() {
+            super.onPreExecute()
+
+            val activity = weakReference.get()!!
+
+            if(!activity.isFinishing){
+                progressDialog = ProgressDialogHelper.getProgressDialog(activity, R.string.fetching)
+                progressDialog!!.show()
+            }
+        }
+
+        override fun doInBackground(vararg p0: Void?): FetchDailyProgressResponseModel {
+            val activity = weakReference.get()!!
+
+            if(!activity.isFinishing){
+                return ServicePost.doPostSpecific(FetchSpecificDayRequestModel(email, password, year, month, day, activity), activity)
+            }
+            return FetchDailyProgressResponseModel(null, null, null, null)
+        }
+
+        override fun onPostExecute(result: FetchDailyProgressResponseModel) {
+            super.onPostExecute(result)
+
+            val activity = weakReference.get()!!
+
+            if(!activity.isFinishing){
+                progressDialog!!.cancel()
+
+                if(result.getError() == null){
+                    activity.updateUI(result.getProteinProgress()!!, result.getCarbsProgress()!!, result.getFatsProgress()!!)
+                }else{
+                    Snackbar.make(activity.nsv_main, result.getError().toString(), Snackbar.LENGTH_SHORT).show()
+                }
+                // get notes for that particular day (convert month to MMM format)
+                RoomSetupAsyncTask(MonthHelper.getMonth(month.toInt()), day, year, activity).execute()
+
+            }
+        }
+
+    }
 
     private class FetchDailyProgressAsyncTask(private val email: String, private val password: String, mainActivity: MainActivity): AsyncTask<Void, Void, FetchDailyProgressResponseModel>() {
         private var weakReference: WeakReference<MainActivity> = WeakReference(mainActivity)
@@ -468,7 +539,7 @@ class MainActivity : AppCompatActivity(), NavigationView.OnNavigationItemSelecte
             return FetchDailyProgressResponseModel(null, null, null, ErrorMapCreator.getHashMap(mainActivity)[Constants.ZERO].toString())
         }
 
-        override fun onPostExecute(fetchDailyProgressResponseModel: FetchDailyProgressResponseModel?) {
+        override fun onPostExecute(fetchDailyProgressResponseModel: FetchDailyProgressResponseModel) {
             super.onPostExecute(fetchDailyProgressResponseModel)
             val mainActivity: MainActivity = weakReference.get()!!
 
@@ -476,10 +547,11 @@ class MainActivity : AppCompatActivity(), NavigationView.OnNavigationItemSelecte
                 progressDialog!!.cancel()
             }
 
-            if(fetchDailyProgressResponseModel!!.getError() == null){
+            if(fetchDailyProgressResponseModel.getError() == null){
                 mainActivity.updateUI(fetchDailyProgressResponseModel.getProteinProgress()!!, fetchDailyProgressResponseModel.getCarbsProgress()!!, fetchDailyProgressResponseModel.getFatsProgress()!!)
             }else{
                 Snackbar.make(mainActivity.nsv_main, fetchDailyProgressResponseModel.getError().toString(), Snackbar.LENGTH_SHORT).show()
+                mainActivity.updateUI(0.toString(), 0.toString(), 0.toString())
             }
 
         }

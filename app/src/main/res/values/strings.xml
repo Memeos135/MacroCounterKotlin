@@ -28,6 +28,7 @@
     <string name="logout">Logout</string>
     <string name="submit">Submit</string>
     <string name="successful_update">Macros update successful</string>
+    <string name="fetch_failed">Fetching macros failed</string>
 
     <string name="P">P</string>
     <string name="C">C</string>

@@ -1,8 +1,10 @@
 <?xml version="1.0" encoding="utf-8"?>
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
         xmlns:app="http://schemas.android.com/apk/res-auto"
-        android:orientation="vertical" android:layout_width="match_parent"
-        android:layout_height="match_parent">
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_margin="16dp"
+        android:orientation="vertical">
 
     <LinearLayout
             android:layout_width="match_parent"
@@ -30,12 +32,14 @@
                     android:id="@+id/protein_cat_input"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    android:layout_marginTop="16dp"
+                    android:layout_marginTop="8dp"
                     android:background="@drawable/underline_blue"
                     android:ems="10"
                     android:inputType="number"
+                    android:padding="8dp"
                     android:textAlignment="center"
                     android:textColor="@color/white"
+                    android:textColorHint="@color/darkGrey"
                     android:textSize="14sp" />
         </LinearLayout>
 
@@ -59,12 +63,14 @@
                     android:id="@+id/carbs_cat_input"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    android:layout_marginTop="16dp"
+                    android:layout_marginTop="8dp"
                     android:background="@drawable/underline_blue"
                     android:ems="10"
                     android:inputType="number"
+                    android:padding="8dp"
                     android:textAlignment="center"
                     android:textColor="@color/white"
+                    android:textColorHint="@color/darkGrey"
                     android:textSize="14sp" />
         </LinearLayout>
 
@@ -88,12 +94,14 @@
                     android:id="@+id/fat_cat_input"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    android:layout_marginTop="16dp"
+                    android:layout_marginTop="8dp"
                     android:background="@drawable/underline_blue"
                     android:ems="10"
                     android:inputType="number"
+                    android:padding="8dp"
                     android:textAlignment="center"
                     android:textColor="@color/white"
+                    android:textColorHint="@color/darkGrey"
                     android:textSize="14sp" />
         </LinearLayout>
 
