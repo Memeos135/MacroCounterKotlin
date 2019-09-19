@@ -44,6 +44,9 @@
 
     <string name="protein">Protein</string>
     <string name="carbs">Carbohydrates</string>
+    <string name="carb" translatable="false">carbs</string>
+    <string name="fat" translatable="false">fats</string>
+    <string name="prot" translatable="false">protein</string>
     <string name="fats">Fats</string>
     <string name="protein_goal">Daily protein intake</string>
     <string name="carb_goal">Daily carbohydrate intake</string>

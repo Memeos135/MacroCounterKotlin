@@ -394,17 +394,17 @@ class MainActivity : AppCompatActivity(), NavigationView.OnNavigationItemSelecte
                         dialog.protein_cat.text.toString().startsWith("P", true) -> {
                             // post request to AWS for protein daily update
                             val updatedValue = tv_protein_current.text.toString().toInt() + dialog.protein_cat_input.text.toString().toInt()
-                            UpdateDailyProgressAsyncTask(dialog.protein_cat.text.toString(), updatedValue.toString(), activity).execute()
+                            UpdateDailyProgressAsyncTask(getString(R.string.prot), updatedValue.toString(), activity).execute()
                         }
                         dialog.protein_cat.text.toString().startsWith("C", true) -> {
                             // post request to AWS for carbs daily update
                             val updatedValue = tv_carbs_current.text.toString().toInt() + dialog.protein_cat_input.text.toString().toInt()
-                            UpdateDailyProgressAsyncTask(dialog.carbs_cat.text.toString(), updatedValue.toString(), activity).execute()
+                            UpdateDailyProgressAsyncTask(getString(R.string.carb), updatedValue.toString(), activity).execute()
                         }
                         else -> {
                             // post request to AWS for fats daily update
                             val updatedValue = tv_fat_current.text.toString().toInt() + dialog.protein_cat_input.text.toString().toInt()
-                            UpdateDailyProgressAsyncTask(dialog.fat_cat.text.toString(), updatedValue.toString(), activity).execute()
+                            UpdateDailyProgressAsyncTask(getString(R.string.fat), updatedValue.toString(), activity).execute()
                         }
                     }
                 }
