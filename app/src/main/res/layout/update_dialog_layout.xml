@@ -24,7 +24,7 @@
                 android:layout_marginTop="16dp"
                 android:background="@drawable/underline_blue"
                 android:ems="10"
-                android:inputType="number"
+                android:inputType="numberSigned|number"
                 android:padding="8dp"
                 android:textAlignment="center"
                 android:textColor="@color/white"

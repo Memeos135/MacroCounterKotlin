@@ -150,14 +150,17 @@ class MainActivity : AppCompatActivity(), NavigationView.OnNavigationItemSelecte
         when {
             category.startsWith("P", true) -> {
                 tv_protein_current.text = updatedValue
+                tv_protein_remain.text = computeRemaining(updatedValue, Constants.PROTEIN)
                 computeCalories(tv_protein_current.text.toString(), tv_carbs_current.text.toString(), tv_fat_current.text.toString())
             }
             category.startsWith("C", true) -> {
                 tv_carbs_current.text = updatedValue
+                tv_carbs_remain.text = computeRemaining(updatedValue, Constants.CARBS)
                 computeCalories(tv_protein_current.text.toString(), tv_carbs_current.text.toString(), tv_fat_current.text.toString())
             }
             else -> {
                 tv_fat_current.text = updatedValue
+                tv_fat_remain.text = computeRemaining(updatedValue, Constants.FATS)
                 computeCalories(tv_protein_current.text.toString(), tv_carbs_current.text.toString(), tv_fat_current.text.toString())
             }
         }
@@ -526,8 +529,11 @@ class MainActivity : AppCompatActivity(), NavigationView.OnNavigationItemSelecte
                     Snackbar.make(activity.nsv_main, result.getError().toString(), Snackbar.LENGTH_SHORT).show()
                 }
                 // get notes for that particular day (convert month to MMM format)
-                RoomSetupAsyncTask(MonthHelper.getMonth(month.toInt()), day, year, activity).execute()
-
+                if(month.startsWith("0")){
+                    RoomSetupAsyncTask(MonthHelper.getMonth(Calendar.getInstance().get(Calendar.MONTH)), day, year, activity).execute()
+                }else{
+                    RoomSetupAsyncTask(MonthHelper.getMonth(month.toInt()), day, year, activity).execute()
+                }
             }
         }
 
