@@ -404,27 +404,29 @@ class MainActivity : AppCompatActivity(), NavigationView.OnNavigationItemSelecte
 
         dialog.protein_cat_input.setOnKeyListener(View.OnKeyListener { v, keyCode, event ->
             if (keyCode == KeyEvent.KEYCODE_ENTER && event.action == KeyEvent.ACTION_UP) {
-                if(dialog.protein_cat_input.text.isEmpty()){
-                    Snackbar.make(nsv_main, R.string.fill_empty_fields, Snackbar.LENGTH_SHORT).show()
-                }else{
-                    val email = PreferenceManager.getDefaultSharedPreferences(this).getString(Constants.EMAIL, "")
-                    val password = PreferenceManager.getDefaultSharedPreferences(this).getString(Constants.PASSWORD, "")
+                when {
+                    nav_view.menu.findItem(R.id.nav_logout) == null -> Snackbar.make(nsv_main, R.string.login_first, Snackbar.LENGTH_SHORT).show()
+                    dialog.protein_cat_input.text.isEmpty() -> Snackbar.make(nsv_main, R.string.fill_empty_fields, Snackbar.LENGTH_SHORT).show()
+                    else -> {
+                        val email = PreferenceManager.getDefaultSharedPreferences(this).getString(Constants.EMAIL, "")
+                        val password = PreferenceManager.getDefaultSharedPreferences(this).getString(Constants.PASSWORD, "")
 
-                    when {
-                        dialog.protein_cat.text.toString().startsWith("P", true) -> {
-                            // post request to AWS for protein daily update
-                            val updatedValue = tv_protein_current.text.toString().toInt() + dialog.protein_cat_input.text.toString().toInt()
-                            UpdateDailyProgressAsyncTask(getString(R.string.prot), updatedValue.toString(), email.toString(), password.toString(), dialog, currentDate, activity).execute()
-                        }
-                        dialog.protein_cat.text.toString().startsWith("C", true) -> {
-                            // post request to AWS for carbs daily update
-                            val updatedValue = tv_carbs_current.text.toString().toInt() + dialog.protein_cat_input.text.toString().toInt()
-                            UpdateDailyProgressAsyncTask(getString(R.string.carb), updatedValue.toString(), email.toString(), password.toString(), dialog, currentDate, activity).execute()
-                        }
-                        else -> {
-                            // post request to AWS for fats daily update
-                            val updatedValue = tv_fat_current.text.toString().toInt() + dialog.protein_cat_input.text.toString().toInt()
-                            UpdateDailyProgressAsyncTask(getString(R.string.fat), updatedValue.toString(), email.toString(), password.toString(), dialog, currentDate, activity).execute()
+                        when {
+                            dialog.protein_cat.text.toString().startsWith("P", true) -> {
+                                // post request to AWS for protein daily update
+                                val updatedValue = tv_protein_current.text.toString().toInt() + dialog.protein_cat_input.text.toString().toInt()
+                                UpdateDailyProgressAsyncTask(getString(R.string.prot), updatedValue.toString(), email.toString(), password.toString(), dialog, currentDate, activity).execute()
+                            }
+                            dialog.protein_cat.text.toString().startsWith("C", true) -> {
+                                // post request to AWS for carbs daily update
+                                val updatedValue = tv_carbs_current.text.toString().toInt() + dialog.protein_cat_input.text.toString().toInt()
+                                UpdateDailyProgressAsyncTask(getString(R.string.carb), updatedValue.toString(), email.toString(), password.toString(), dialog, currentDate, activity).execute()
+                            }
+                            else -> {
+                                // post request to AWS for fats daily update
+                                val updatedValue = tv_fat_current.text.toString().toInt() + dialog.protein_cat_input.text.toString().toInt()
+                                UpdateDailyProgressAsyncTask(getString(R.string.fat), updatedValue.toString(), email.toString(), password.toString(), dialog, currentDate, activity).execute()
+                            }
                         }
                     }
                 }
@@ -438,6 +440,11 @@ class MainActivity : AppCompatActivity(), NavigationView.OnNavigationItemSelecte
 
 
     private fun showNoteInputDialog(){
+        if(nav_view.menu.findItem(R.id.nav_logout) == null){
+            Snackbar.make(nsv_main, R.string.login_first, Snackbar.LENGTH_SHORT).show()
+            return
+        }
+        
         val dialog = NoteDialogHelper.showInputDialog(this,
             R.layout.notes_dialog_layout
         )
