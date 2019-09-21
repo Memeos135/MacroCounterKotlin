@@ -50,10 +50,10 @@ import kotlinx.android.synthetic.main.update_dialog_layout.protein_cat_input
 import java.lang.ref.WeakReference
 import java.util.*
 import kotlin.collections.ArrayList
-import kotlin.math.acos
 
 class MainActivity : AppCompatActivity(), NavigationView.OnNavigationItemSelectedListener {
 
+    private var currentDate = ""
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -104,10 +104,19 @@ class MainActivity : AppCompatActivity(), NavigationView.OnNavigationItemSelecte
             // i = year
             // i2 = month
             // i3 = day
+
+            // making sure month number format is 01 - 09 (only if it is less than 10)
+            var month = ""
+            if(i2 < 10){
+                month = "0" + (i2+1).toString()
+            }
+
+            currentDate = "$i-$month-$i3"
+
             val email = PreferenceManager.getDefaultSharedPreferences(this).getString(Constants.EMAIL, "")
             val password = PreferenceManager.getDefaultSharedPreferences(this).getString(Constants.PASSWORD, "")
             if(email.toString().isNotEmpty() && password.toString().isNotEmpty()) {
-                FetchSpecificDayMacrosAsyncTask(email.toString(), password.toString(), i.toString(), i2.toString(), i3.toString(), this).execute()
+                FetchSpecificDayMacrosAsyncTask(email.toString(), password.toString(), i.toString(), month, i3.toString(), this).execute()
             }else{
                 Snackbar.make(nsv_main, R.string.fetch_failed, Snackbar.LENGTH_SHORT).show()
             }
@@ -295,11 +304,16 @@ class MainActivity : AppCompatActivity(), NavigationView.OnNavigationItemSelecte
             if (dialog.protein_cat_input.text.toString().isEmpty() || dialog.carbs_cat_input.text.toString().isEmpty() || dialog.fat_cat_input.text.toString().isEmpty()) {
                 Snackbar.make(nsv_main, R.string.fill_empty_fields, Snackbar.LENGTH_SHORT).show()
             } else {
+                val email = PreferenceManager.getDefaultSharedPreferences(this).getString(Constants.EMAIL, "")
+                val password = PreferenceManager.getDefaultSharedPreferences(this).getString(Constants.PASSWORD, "")
                 UpdateGoalAsyncTask(
                     dialog.protein_cat_input.text.toString(),
                     dialog.carbs_cat_input.text.toString(),
                     dialog.fat_cat_input.text.toString(),
-                    activity
+                    email.toString(),
+                    password.toString(),
+                    activity,
+                    dialog
                 ).execute()
             }
         }
@@ -390,21 +404,24 @@ class MainActivity : AppCompatActivity(), NavigationView.OnNavigationItemSelecte
                 if(dialog.protein_cat_input.text.isEmpty()){
                     Snackbar.make(nsv_main, R.string.fill_empty_fields, Snackbar.LENGTH_SHORT).show()
                 }else{
+                    val email = PreferenceManager.getDefaultSharedPreferences(this).getString(Constants.EMAIL, "")
+                    val password = PreferenceManager.getDefaultSharedPreferences(this).getString(Constants.PASSWORD, "")
+
                     when {
                         dialog.protein_cat.text.toString().startsWith("P", true) -> {
                             // post request to AWS for protein daily update
                             val updatedValue = tv_protein_current.text.toString().toInt() + dialog.protein_cat_input.text.toString().toInt()
-                            UpdateDailyProgressAsyncTask(getString(R.string.prot), updatedValue.toString(), activity).execute()
+                            UpdateDailyProgressAsyncTask(getString(R.string.prot), updatedValue.toString(), email.toString(), password.toString(), dialog, currentDate, activity).execute()
                         }
                         dialog.protein_cat.text.toString().startsWith("C", true) -> {
                             // post request to AWS for carbs daily update
                             val updatedValue = tv_carbs_current.text.toString().toInt() + dialog.protein_cat_input.text.toString().toInt()
-                            UpdateDailyProgressAsyncTask(getString(R.string.carb), updatedValue.toString(), activity).execute()
+                            UpdateDailyProgressAsyncTask(getString(R.string.carb), updatedValue.toString(), email.toString(), password.toString(), dialog, currentDate, activity).execute()
                         }
                         else -> {
                             // post request to AWS for fats daily update
                             val updatedValue = tv_fat_current.text.toString().toInt() + dialog.protein_cat_input.text.toString().toInt()
-                            UpdateDailyProgressAsyncTask(getString(R.string.fat), updatedValue.toString(), activity).execute()
+                            UpdateDailyProgressAsyncTask(getString(R.string.fat), updatedValue.toString(), email.toString(), password.toString(), dialog, currentDate, activity).execute()
                         }
                     }
                 }
@@ -701,7 +718,7 @@ class MainActivity : AppCompatActivity(), NavigationView.OnNavigationItemSelecte
         }
     }
 
-    class UpdateDailyProgressAsyncTask(private val category: String, private val updatedValue: String, activity: MainActivity): AsyncTask<Void, Void, UpdateMacrosResponseModel>(){
+    class UpdateDailyProgressAsyncTask(private val category: String, private val updatedValue: String, private val email: String, private val password: String, private val dialog: Dialog, private val date: String, activity: MainActivity): AsyncTask<Void, Void, UpdateMacrosResponseModel>(){
         private var weakReference: WeakReference<MainActivity> = WeakReference(activity)
         private var progressDialog: ProgressDialog? = null
 
@@ -720,7 +737,7 @@ class MainActivity : AppCompatActivity(), NavigationView.OnNavigationItemSelecte
             val activity = weakReference.get()!!
 
             if(!activity.isFinishing){
-                val updateValuesRequest = UpdateMacrosRequestModel(category, updatedValue, activity)
+                val updateValuesRequest = UpdateMacrosRequestModel(category, updatedValue, email, password, date, activity)
                 return ServicePost.doPostUpdateDaily(updateValuesRequest, activity)
             }
             return UpdateMacrosResponseModel(null, null)
@@ -735,6 +752,7 @@ class MainActivity : AppCompatActivity(), NavigationView.OnNavigationItemSelecte
                 progressDialog!!.cancel()
 
                 if(result.getResponse() != null){
+                    dialog.dismiss()
                     activity.updatedProgressUI(updatedValue, category)
                 }else{
                     Snackbar.make(activity.nsv_main, result.getCode().toString(), Snackbar.LENGTH_SHORT).show()
@@ -743,7 +761,8 @@ class MainActivity : AppCompatActivity(), NavigationView.OnNavigationItemSelecte
         }
     }
 
-    class UpdateGoalAsyncTask(private val proteinVal: String, private val carbVal: String, private val fatVal: String, activity: MainActivity): AsyncTask<Void, Void, UpdateMacrosResponseModel>(){
+
+    class UpdateGoalAsyncTask(private val proteinVal: String, private val carbVal: String, private val fatVal: String, private val email: String, private val password: String, activity: MainActivity, private val dialog: Dialog): AsyncTask<Void, Void, UpdateMacrosResponseModel>(){
         private var weakReference: WeakReference<MainActivity> = WeakReference(activity)
         private var progressDialog: ProgressDialog? = null
 
@@ -762,7 +781,7 @@ class MainActivity : AppCompatActivity(), NavigationView.OnNavigationItemSelecte
             val activity = weakReference.get()!!
 
             if(!activity.isFinishing){
-                val updateValuesRequest = UpdateGoalMacrosRequestModel(proteinVal, carbVal, fatVal, activity)
+                val updateValuesRequest = UpdateGoalMacrosRequestModel(proteinVal, carbVal, fatVal, email, password, activity)
                 return ServicePost.doPostUpdateGoal(updateValuesRequest, activity)
             }
             return UpdateMacrosResponseModel(null, null)
@@ -779,6 +798,14 @@ class MainActivity : AppCompatActivity(), NavigationView.OnNavigationItemSelecte
                 if(result.getResponse() != null){
                     SaveHelper.saveGoalValues(activity, proteinVal, carbVal, fatVal)
                     Snackbar.make(activity.nsv_main, R.string.successful_update, Snackbar.LENGTH_SHORT).show()
+
+                    dialog.protein_cat_input.text.clear()
+                    dialog.carbs_cat_input.text.clear()
+                    dialog.fat_cat_input.text.clear()
+
+                    dialog.protein_cat_input.hint = proteinVal
+                    dialog.carbs_cat_input.hint = carbVal
+                    dialog.fat_cat_input.hint = fatVal
                 }else{
                     Snackbar.make(activity.nsv_main, result.getCode().toString(), Snackbar.LENGTH_SHORT).show()
                 }
