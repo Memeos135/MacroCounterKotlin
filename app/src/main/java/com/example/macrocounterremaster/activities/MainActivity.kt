@@ -10,6 +10,7 @@ import android.os.Handler
 import android.preference.PreferenceManager
 import android.text.Editable
 import android.text.TextWatcher
+import android.util.Log
 import android.view.KeyEvent
 import com.google.android.material.floatingactionbutton.FloatingActionButton
 import androidx.core.view.GravityCompat
@@ -523,7 +524,12 @@ class MainActivity : AppCompatActivity(), NavigationView.OnNavigationItemSelecte
             val activity = weakReference.get()!!
 
             if(!activity.isFinishing){
-                return ServicePost.doPostSpecific(FetchSpecificDayRequestModel(email, password, year, month, day, activity), activity)
+                return if(month.startsWith("0")){
+                    val formattedMonth = "0"+((month.substring(1, month.length)).toInt()+1).toString()
+                    ServicePost.doPostSpecific(FetchSpecificDayRequestModel(email, password, year, formattedMonth, day, activity), activity)
+                }else{
+                    ServicePost.doPostSpecific(FetchSpecificDayRequestModel(email, password, year, month, day, activity), activity)
+                }
             }
             return FetchDailyProgressResponseModel(null, null, null, null)
         }
