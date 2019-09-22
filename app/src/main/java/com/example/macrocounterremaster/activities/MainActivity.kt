@@ -54,6 +54,9 @@ import kotlin.collections.ArrayList
 class MainActivity : AppCompatActivity(), NavigationView.OnNavigationItemSelectedListener {
 
     private var currentDate = ""
+    private var year = ""
+    private var month = ""
+    private var day = ""
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -104,11 +107,14 @@ class MainActivity : AppCompatActivity(), NavigationView.OnNavigationItemSelecte
             // i = year
             // i2 = month
             // i3 = day
+            year = i.toString()
+            month = i2.toString()
+            day = i3.toString()
 
             // making sure month number format is 01 - 09 (only if it is less than 10)
-            var month = ""
+            var month = i2.toString()
             if(i2 < 10){
-                month = "0" + (i2+1).toString()
+                month = "0$i2"
             }
 
             currentDate = "$i-$month-$i3"
@@ -491,9 +497,9 @@ class MainActivity : AppCompatActivity(), NavigationView.OnNavigationItemSelecte
         val adapter: NotesRecyclerAdapter = rv_notes.adapter as NotesRecyclerAdapter
 
         val noteModel = NoteModel(
-            MonthHelper.getMonth(Calendar.getInstance().get(Calendar.MONTH)),
-            Calendar.getInstance().get(Calendar.DAY_OF_MONTH).toString(),
-            Calendar.getInstance().get(Calendar.YEAR).toString(),
+            MonthHelper.getMonth(month.toInt()),
+            day,
+            year,
             msg)
 
         RoomAddNoteAsyncTask(noteModel, this, adapter).execute()
@@ -537,7 +543,7 @@ class MainActivity : AppCompatActivity(), NavigationView.OnNavigationItemSelecte
                 }
                 // get notes for that particular day (convert month to MMM format)
                 if(month.startsWith("0")){
-                    RoomSetupAsyncTask(MonthHelper.getMonth(Calendar.getInstance().get(Calendar.MONTH)), day, year, activity).execute()
+                    RoomSetupAsyncTask(MonthHelper.getMonth(month.substring(1, month.length).toInt()), day, year, activity).execute()
                 }else{
                     RoomSetupAsyncTask(MonthHelper.getMonth(month.toInt()), day, year, activity).execute()
                 }
@@ -812,6 +818,7 @@ class MainActivity : AppCompatActivity(), NavigationView.OnNavigationItemSelecte
                     SaveHelper.saveGoalValues(activity, proteinVal, carbVal, fatVal)
                     Snackbar.make(activity.nsv_main, R.string.successful_update, Snackbar.LENGTH_SHORT).show()
 
+                    // update dialog
                     dialog.protein_cat_input.text.clear()
                     dialog.carbs_cat_input.text.clear()
                     dialog.fat_cat_input.text.clear()
@@ -819,6 +826,12 @@ class MainActivity : AppCompatActivity(), NavigationView.OnNavigationItemSelecte
                     dialog.protein_cat_input.hint = proteinVal
                     dialog.carbs_cat_input.hint = carbVal
                     dialog.fat_cat_input.hint = fatVal
+
+                    // update mainActivity text views
+                    activity.tv_protein_remain.text = activity.computeRemaining(activity.tv_protein_current.text.toString(), Constants.PROTEIN)
+                    activity.tv_carbs_remain.text = activity.computeRemaining(activity.tv_carbs_current.text.toString(), Constants.PROTEIN)
+                    activity.tv_fat_remain.text = activity.computeRemaining(activity.tv_fat_current.text.toString(), Constants.PROTEIN)
+                    activity.computeCalories(activity.tv_protein_current.text.toString(), activity.tv_carbs_current.text.toString(), activity.tv_fat_current.text.toString())
                 }else{
                     Snackbar.make(activity.nsv_main, result.getCode().toString(), Snackbar.LENGTH_SHORT).show()
                 }
