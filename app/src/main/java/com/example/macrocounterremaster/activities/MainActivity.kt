@@ -10,6 +10,7 @@ import android.os.Handler
 import android.preference.PreferenceManager
 import android.text.Editable
 import android.text.TextWatcher
+import android.util.Log
 import android.view.KeyEvent
 import com.google.android.material.floatingactionbutton.FloatingActionButton
 import androidx.core.view.GravityCompat
@@ -113,11 +114,11 @@ class MainActivity : AppCompatActivity(), NavigationView.OnNavigationItemSelecte
 
             // making sure month number format is 01 - 09 (only if it is less than 10)
             var month = i2.toString()
+            currentDate = year + "-" + (i2+1).toString() + "-" + day
             if(i2 < 10){
                 month = "0$i2"
+                currentDate = year + "-0" + (i2+1).toString() + "-" + day
             }
-
-            currentDate = "$i-$month-$i3"
 
             val email = PreferenceManager.getDefaultSharedPreferences(this).getString(Constants.EMAIL, "")
             val password = PreferenceManager.getDefaultSharedPreferences(this).getString(Constants.PASSWORD, "")
