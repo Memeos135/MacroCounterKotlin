@@ -10,7 +10,6 @@ import android.os.Handler
 import android.preference.PreferenceManager
 import android.text.Editable
 import android.text.TextWatcher
-import android.util.Log
 import android.view.KeyEvent
 import com.google.android.material.floatingactionbutton.FloatingActionButton
 import androidx.core.view.GravityCompat
@@ -835,8 +834,8 @@ class MainActivity : AppCompatActivity(), NavigationView.OnNavigationItemSelecte
 
                     // update mainActivity text views
                     activity.tv_protein_remain.text = activity.computeRemaining(activity.tv_protein_current.text.toString(), Constants.PROTEIN)
-                    activity.tv_carbs_remain.text = activity.computeRemaining(activity.tv_carbs_current.text.toString(), Constants.PROTEIN)
-                    activity.tv_fat_remain.text = activity.computeRemaining(activity.tv_fat_current.text.toString(), Constants.PROTEIN)
+                    activity.tv_carbs_remain.text = activity.computeRemaining(activity.tv_carbs_current.text.toString(), Constants.CARBS)
+                    activity.tv_fat_remain.text = activity.computeRemaining(activity.tv_fat_current.text.toString(), Constants.FATS)
                     activity.computeCalories(activity.tv_protein_current.text.toString(), activity.tv_carbs_current.text.toString(), activity.tv_fat_current.text.toString())
                 }else{
                     Snackbar.make(activity.nsv_main, result.getCode().toString(), Snackbar.LENGTH_SHORT).show()
