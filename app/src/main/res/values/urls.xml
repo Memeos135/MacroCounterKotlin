@@ -2,10 +2,10 @@
 <resources>
     <string name="x_urlencoded" translatable="false">application/x-www-form-urlencoded; charset=utf-8</string>
     <string name="json" translatable="false">application/json; charset=utf-8</string>
-    <string name="token_url" translatable="false">http://13.232.209.99/getTokenLogin</string>
-    <string name="signup_url" translatable="false">http://13.232.209.99/signup</string>
-    <string name="fetch_daily_url" translatable="false">http://13.232.209.99/getDailyProgress</string>
-    <string name="update_macros_url" translatable="false">http://13.232.209.99/postDailyProgress</string>
-    <string name="goal_update_url" translatable="false">http://13.232.209.99/postGoalUpdate</string>
-    <string name="fetch_specific_day" translatable="false">http://13.232.209.99/getSpecificDayProgress</string>
+    <string name="token_url" translatable="false">http://mohammedikbokhari.com/API/getTokenLogin</string>
+    <string name="signup_url" translatable="false">http://mohammedikbokhari.com/API/signup</string>
+    <string name="fetch_daily_url" translatable="false">http://mohammedikbokhari.com/API/getDailyProgress</string>
+    <string name="update_macros_url" translatable="false">http://mohammedikbokhari.com/API/postDailyProgress</string>
+    <string name="goal_update_url" translatable="false">http://mohammedikbokhari.com/API/postGoalUpdate</string>
+    <string name="fetch_specific_day" translatable="false">http://mohammedikbokhari.com/API/getSpecificDayProgress</string>
 </resources>
