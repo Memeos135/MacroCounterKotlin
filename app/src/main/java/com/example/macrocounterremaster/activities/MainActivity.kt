@@ -10,7 +10,6 @@ import android.os.Handler
 import android.preference.PreferenceManager
 import android.text.Editable
 import android.text.TextWatcher
-import android.util.Log
 import android.view.KeyEvent
 import com.google.android.material.floatingactionbutton.FloatingActionButton
 import androidx.core.view.GravityCompat
@@ -246,9 +245,13 @@ class MainActivity : AppCompatActivity(), NavigationView.OnNavigationItemSelecte
     }
 
     private fun setupEmptyRecycler(){
-        val month = MonthHelper.getMonth(Calendar.getInstance().get(Calendar.MONTH))
-        val day = Calendar.getInstance().get(Calendar.DAY_OF_MONTH).toString()
+        val month = MonthHelper.getMonth(Calendar.getInstance().get(Calendar.MONTH)+1)
+        var day = Calendar.getInstance().get(Calendar.DAY_OF_MONTH).toString()
         val year = Calendar.getInstance().get(Calendar.YEAR).toString()
+
+        if(day.toInt() < 10){
+            day = "0$day"
+        }
 
         RoomSetupAsyncTask(month, day, year, this).execute()
     }
