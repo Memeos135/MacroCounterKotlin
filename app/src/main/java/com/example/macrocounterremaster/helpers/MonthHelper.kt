@@ -17,7 +17,7 @@ class MonthHelper {
                 "NOV",
                 "DEC"
             )
-            return monthNames[index]
+            return monthNames[index-1]
         }
     }
 }

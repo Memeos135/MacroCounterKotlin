@@ -55,9 +55,9 @@ import kotlin.collections.ArrayList
 class MainActivity : AppCompatActivity(), NavigationView.OnNavigationItemSelectedListener {
 
     private var currentDate = ""
-    private var year = ""
-    private var month = ""
-    private var day = ""
+    private var year = Calendar.getInstance().get(Calendar.YEAR).toString()
+    private var month = (Calendar.getInstance().get(Calendar.MONTH)+1).toString()
+    private var day = Calendar.getInstance().get(Calendar.DAY_OF_MONTH).toString()
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -109,21 +109,31 @@ class MainActivity : AppCompatActivity(), NavigationView.OnNavigationItemSelecte
             // i2 = month
             // i3 = day
             year = i.toString()
-            month = i2.toString()
+            month = (i2+1).toString()
             day = i3.toString()
 
             // making sure month number format is 01 - 09 (only if it is less than 10)
-            var month = i2.toString()
-            currentDate = year + "-" + (i2+1).toString() + "-" + day
-            if(i2 < 10){
-                month = "0$i2"
-                currentDate = year + "-0" + (i2+1).toString() + "-" + day
+            var tempMonth = (i2+1).toString()
+            var tempDay = i3.toString()
+
+            currentDate = "$year-$tempMonth-$tempDay"
+
+            // increment month and append zero to it
+            if(i2+1 < 10){
+                tempMonth = "0$tempMonth"
+                currentDate = "$year-$tempMonth-$tempDay"
+            }
+
+            // append zero to day
+            if(i3 < 10){
+                tempDay = "0$i3"
+                currentDate = "$year-$tempMonth-$tempDay"
             }
 
             val email = PreferenceManager.getDefaultSharedPreferences(this).getString(Constants.EMAIL, "")
             val password = PreferenceManager.getDefaultSharedPreferences(this).getString(Constants.PASSWORD, "")
             if(email.toString().isNotEmpty() && password.toString().isNotEmpty()) {
-                FetchSpecificDayMacrosAsyncTask(email.toString(), password.toString(), i.toString(), month, i3.toString(), this).execute()
+                FetchSpecificDayMacrosAsyncTask(email.toString(), password.toString(), i.toString(), tempMonth, tempDay, this).execute()
             }else{
                 Snackbar.make(nsv_main, R.string.fetch_failed, Snackbar.LENGTH_SHORT).show()
             }
@@ -236,7 +246,7 @@ class MainActivity : AppCompatActivity(), NavigationView.OnNavigationItemSelecte
     }
 
     private fun setupEmptyRecycler(){
-        val month = MonthHelper.getMonth(Calendar.getInstance().get(Calendar.MONTH)).toString()
+        val month = MonthHelper.getMonth(Calendar.getInstance().get(Calendar.MONTH))
         val day = Calendar.getInstance().get(Calendar.DAY_OF_MONTH).toString()
         val year = Calendar.getInstance().get(Calendar.YEAR).toString()
 
@@ -495,6 +505,14 @@ class MainActivity : AppCompatActivity(), NavigationView.OnNavigationItemSelecte
     }
 
     private fun addNoteToRecycler(msg: String){
+        if(month.toInt() < 10){
+            month = "0"+month.toInt()
+        }
+
+        if(day.toInt() < 10){
+            day = "0"+day.toInt()
+        }
+
         val adapter: NotesRecyclerAdapter = rv_notes.adapter as NotesRecyclerAdapter
 
         val noteModel = NoteModel(
@@ -511,51 +529,45 @@ class MainActivity : AppCompatActivity(), NavigationView.OnNavigationItemSelecte
 
         override fun onPreExecute() {
             super.onPreExecute()
+            val mainActivity: MainActivity = weakReference.get()!!
 
-            val activity = weakReference.get()!!
-
-            if(!activity.isFinishing){
-                progressDialog = ProgressDialogHelper.getProgressDialog(activity, R.string.fetching)
+            if(!mainActivity.isFinishing){
+                progressDialog = ProgressDialogHelper.getProgressDialog(mainActivity, R.string.fetching)
                 progressDialog!!.show()
             }
         }
 
         override fun doInBackground(vararg p0: Void?): FetchDailyProgressResponseModel {
-            val activity = weakReference.get()!!
+            val mainActivity: MainActivity = weakReference.get()!!
 
-            if(!activity.isFinishing){
-                return if(month.startsWith("0")){
-                    val formattedMonth = "0"+((month.substring(1, month.length)).toInt()+1).toString()
-                    ServicePost.doPostSpecific(FetchSpecificDayRequestModel(email, password, year, formattedMonth, day, activity), activity)
-                }else{
-                    ServicePost.doPostSpecific(FetchSpecificDayRequestModel(email, password, year, month, day, activity), activity)
-                }
+            if(!mainActivity.isFinishing){
+                return ServicePost.doPostSpecific(FetchSpecificDayRequestModel(
+                    email,
+                    password,
+                    year,
+                    month,
+                    day, mainActivity), mainActivity)
             }
-            return FetchDailyProgressResponseModel(null, null, null, null)
+            return FetchDailyProgressResponseModel(null, null, null, ErrorMapCreator.getHashMap(mainActivity)[Constants.ZERO].toString())
         }
 
-        override fun onPostExecute(result: FetchDailyProgressResponseModel) {
-            super.onPostExecute(result)
+        override fun onPostExecute(fetchDailyProgressResponseModel: FetchDailyProgressResponseModel) {
+            super.onPostExecute(fetchDailyProgressResponseModel)
+            val mainActivity: MainActivity = weakReference.get()!!
 
-            val activity = weakReference.get()!!
-
-            if(!activity.isFinishing){
+            if(!mainActivity.isFinishing){
                 progressDialog!!.cancel()
-
-                if(result.getError() == null){
-                    activity.updateUI(result.getProteinProgress()!!, result.getCarbsProgress()!!, result.getFatsProgress()!!)
-                }else{
-                    Snackbar.make(activity.nsv_main, result.getError().toString(), Snackbar.LENGTH_SHORT).show()
-                }
-                // get notes for that particular day (convert month to MMM format)
-                if(month.startsWith("0")){
-                    RoomSetupAsyncTask(MonthHelper.getMonth(month.substring(1, month.length).toInt()), day, year, activity).execute()
-                }else{
-                    RoomSetupAsyncTask(MonthHelper.getMonth(month.toInt()), day, year, activity).execute()
-                }
             }
-        }
 
+            if(fetchDailyProgressResponseModel.getError() == null){
+                mainActivity.updateUI(fetchDailyProgressResponseModel.getProteinProgress()!!, fetchDailyProgressResponseModel.getCarbsProgress()!!, fetchDailyProgressResponseModel.getFatsProgress()!!)
+            }else{
+                Snackbar.make(mainActivity.nsv_main, fetchDailyProgressResponseModel.getError().toString(), Snackbar.LENGTH_SHORT).show()
+            }
+            // get notes for that particular day (convert month to MMM format)
+            RoomSetupAsyncTask(MonthHelper.getMonth(month.toInt()), day, year, mainActivity).execute()
+
+        }
     }
 
     private class FetchDailyProgressAsyncTask(private val email: String, private val password: String, mainActivity: MainActivity): AsyncTask<Void, Void, FetchDailyProgressResponseModel>() {
